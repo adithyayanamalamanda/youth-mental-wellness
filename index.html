@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Wellness Assessment - Indian Youth</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Dark Mode Toggle Button */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid var(--color-border);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .dark-mode-toggle.dark {
+            background: rgba(30, 30, 30, 0.9);
+            border-color: #555;
+        }
+
+        .dark-mode-toggle.dark:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        body.dark-mode .page {
+            background-color: #121212;
+        }
+
+        body.dark-mode .card {
+            background-color: #1e1e1e;
+            border-color: #333;
+            color: #ffffff;
+        }
+
+        body.dark-mode .card__body {
+            color: #ffffff;
+        }
+
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 {
+            color: #ffffff;
+        }
+
+        body.dark-mode p, body.dark-mode span, body.dark-mode div, body.dark-mode li {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .btn {
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+
+        body.dark-mode .btn:hover {
+            background-color: #4a4a4a;
+        }
+
+        body.dark-mode .btn--primary {
+            background-color: #4f46e5;
+            color: white;
+        }
+
+        body.dark-mode .btn--primary:hover {
+            background-color: #4338ca;
+        }
+
+        body.dark-mode .btn--outline {
+            background-color: transparent;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+
+        body.dark-mode .btn--outline:hover {
+            background-color: #3a3a3a;
+        }
+
+        body.dark-mode input,
+        body.dark-mode textarea,
+        body.dark-mode select {
+            background-color: #2a2a2a;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+
+        body.dark-mode input::placeholder,
+        body.dark-mode textarea::placeholder {
+            color: #aaa;
+        }
+
+        body.dark-mode .modal-content {
+            background-color: #2a2a2a;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .modal-header {
+            border-bottom-color: #444;
+        }
+
+        body.dark-mode .modal-footer {
+            border-top-color: #444;
+        }
+
+        body.dark-mode .chatbot-window {
+            background-color: #2a2a2a;
+            border-color: #444;
+        }
+
+        body.dark-mode .chatbot-header {
+            background-color: #333;
+            border-bottom-color: #444;
+        }
+
+        body.dark-mode .question-item {
+            background-color: #333;
+            border-color: #444;
+        }
+
+        body.dark-mode .question-item:hover {
+            background-color: #444;
+        }
+
+        body.dark-mode .option-btn,
+        body.dark-mode .scale-btn {
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+
+        body.dark-mode .option-btn:hover,
+        body.dark-mode .scale-btn:hover {
+            background-color: #4a4a4a;
+        }
+
+        body.dark-mode .selected {
+            background-color: #4f46e5;
+            color: white;
+        }
+
+        body.dark-mode .progress-bar {
+            background-color: #333;
+        }
+
+        body.dark-mode .progress-fill {
+            background-color: #4f46e5;
+        }
+
+        body.dark-mode .concern-tag {
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+
+        body.dark-mode .tab-btn {
+            background-color: #2a2a2a;
+            color: #e0e0e0;
+            border-color: #444;
+        }
+
+        body.dark-mode .tab-btn.active {
+            background-color: #4f46e5;
+            color: white;
+        }
+
+        body.dark-mode .recommendations-list li {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .videos-list a {
+            color: #4f46e5;
+        }
+
+        body.dark-mode .videos-list a:hover {
+            color: #6366f1;
+        }
+
+        body.dark-mode .tips-list li {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .error-message {
+            color: #ef4444;
+        }
+
+        body.dark-mode .success-message {
+            color: #10b981;
+        }
+
+        body.dark-mode .welcome-description {
+            color: #b0b0b0;
+        }
+
+        body.dark-mode .mood-description {
+            color: #b0b0b0;
+        }
+
+        body.dark-mode .mood-score {
+            color: #ffffff;
+        }
+
+        body.dark-mode .step-info span {
+            color: #b0b0b0;
+        }
+
+        body.dark-mode .step-info h3 {
+            color: #ffffff;
+        }
+
+        body.dark-mode .results-header p {
+            color: #b0b0b0;
+        }
+
+        body.dark-mode .page-header p {
+            color: #b0b0b0;
+        }
+
+        body.dark-mode .resource-category h4 {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .resource-category ul li {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .professional-help h4 {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .professional-help p {
+            color: #b0b0b0;
+        }
+
+        body.dark-mode .professional-help ul li {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .crisis-contacts h4 {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .crisis-contacts p {
+            color: #b0b0b0;
+        }
+
+        body.dark-mode .safety-reminder h4 {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .safety-reminder ul li {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .contact-item p small {
+            color: #888;
+        }
+
+        body.dark-mode .chatbot-answer {
+            border-top-color: #444;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .chatbot-questions {
+            border-bottom-color: #444;
+        }
+
+        body.dark-mode .animated-label {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .animated-input {
+            background-color: #2a2a2a;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+
+        body.dark-mode .animated-input::placeholder {
+            color: #aaa;
+        }
+
+        body.dark-mode .animated-header {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .animated-btn {
+            background-color: #4f46e5;
+            color: white;
+        }
+
+        body.dark-mode .animated-btn:hover {
+            background-color: #4338ca;
+        }
+
+        body.dark-mode .close-btn {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .close-btn:hover {
+            background-color: #444;
+        }
+
+        body.dark-mode .back-btn {
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+
+        body.dark-mode .back-btn:hover {
+            background-color: #4a4a4a;
+        }
+
+        body.dark-mode .chatbot-close {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .chatbot-close:hover {
+            background-color: #444;
+        }
+
+        body.dark-mode .logout-btn-bottom {
+            background-color: transparent;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+
+        body.dark-mode .logout-btn-bottom:hover {
+            background-color: #3a3a3a;
+        }
+
+        /* Open Demo Button */
+        .open-demo-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(79, 70, 229, 0.9);
+            border: 2px solid var(--color-border);
+            border-radius: 8px;
+            width: auto;
+            height: 40px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .open-demo-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: rgba(79, 70, 229, 1);
+        }
+
+        /* Hide toggle button on very small screens */
+        @media (max-width: 480px) {
+            .dark-mode-toggle {
+                width: 40px;
+                height: 40px;
+                top: 10px;
+                right: 10px;
+            }
+            .open-demo-btn {
+                top: 10px;
+                left: 10px;
+                height: 35px;
+                padding: 0 12px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Open Demo Button -->
+    <button id="open-demo-btn" class="open-demo-btn" title="Open Demo" type="button">Open Demo</button>
+
+    <!-- Dark Mode Toggle Button -->
+    <button id="dark-mode-toggle" class="dark-mode-toggle" title="Toggle Dark Mode" type="button">
+        <span id="toggle-icon">🌙</span>
+    </button>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="page active">
+        <div class="container">
+            <div class="auth-container">
+                <h1>Login</h1>
+                <form id="login-form">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required />
+
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required />
+
+                    <button type="submit" class="btn btn--primary">Login</button>
+                </form>
+                <p>Don't have an account? <a href="register.html">Register here</a></p>
+                <div id="login-error" class="error-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="page">
+        <div class="container">
+            <div class="welcome-header">
+                <h1>Mental Wellness Assessment</h1>
+                <h2>Comprehensive Mood Analysis for Indian Youth</h2>
+                <p class="welcome-description">
+                    A culturally sensitive assessment designed specifically for Indian youth facing academic, family, and social pressures.
+                    This confidential tool will analyze various aspects of your mental state and provide personalized recommendations.
+                </p>
+            </div>
+        </div>
+
+        <div class="welcome-actions">
+            <button class="btn btn--primary btn--lg" onclick="startAssessmentWithUser()" type="button">
+                Start Assessment (5-7 minutes)
+            </button>
+            <br/>
+            <button class="btn btn--outline btn--lg logout-btn-bottom" onclick="logout()" type="button" style="margin-top: 12px;">
+                Logout
+            </button>
+        </div>
+        <!-- Removed crisis banner as per user request -->
+
+        <!-- User Info Popup -->
+        <div id="user-info-popup" class="modal hidden animated-popup">
+            <div class="modal-content animated-content">
+                <div class="modal-header">
+                    <h3 class="animated-header">Enter Your Information</h3>
+                    <button class="close-btn" onclick="closeUserInfoPopup()" type="button">×</button>
+                </div>
+                <div class="modal-body">
+                    <label for="user-name" class="animated-label">Name:</label>
+                    <input type="text" id="user-name" name="user-name" placeholder="Your name" class="animated-input" />
+                    <label for="user-age" class="animated-label">Age:</label>
+                    <input type="number" id="user-age" name="user-age" placeholder="Your age" min="1" max="120" class="animated-input" />
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn--primary animated-btn" onclick="submitUserInfo()" type="button">Start Assessment</button>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <!-- Chatbot -->
+        <div class="chatbot-container" id="chatbot-container">
+            <div class="chatbot-button" id="chatbot-button" title="Chat with AI">
+                <img src="ai-logo.png" alt="AI Chatbot" style="width:24px; height:24px;">
+            </div>
+            <div class="chatbot-window" id="chatbot-window" style="display:none;">
+                <div class="chatbot-header">
+                    <h4>Quick Check-in</h4>
+                    <button class="chatbot-close" id="chatbot-close" type="button">×</button>
+                </div>
+                <div class="chatbot-questions" id="chatbot-questions">
+                    <div class="question-item" data-answer="I'm feeling good, thank you! How can I assist you today?">How are you feeling today?</div>
+                    <div class="question-item" data-answer="Stress can be tough. Try some deep breathing exercises or take a short walk.">What's been stressing you lately?</div>
+                    <div class="question-item" data-answer="Getting enough sleep is important for mental health. Aim for 7-9 hours per night.">Have you been getting enough sleep?</div>
+                    <div class="question-item" data-answer="Healthy relationships are key. Try to communicate openly with your family and friends.">How are your relationships with family/friends?</div>
+                    <div class="question-item" data-answer="Setting small, achievable goals can help you stay motivated. What goals do you have this week?">What are your goals for this week?</div>
+                </div>
+                <div class="chatbot-answer" id="chatbot-answer" style="padding:10px; border-top:1px solid #ccc;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assessment Screen -->
+    <div id="assessment-screen" class="page">
+        <div class="container">
+            <div class="assessment-header">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="step-info">
+                    <span id="step-counter">Step 1 of 5</span>
+                    <h3 id="step-title">Academic Stress Assessment</h3>
+                </div>
+            </div>
+
+            <div class="assessment-content">
+                <div id="question-container" class="question-container">
+                    <!-- Questions will be dynamically loaded here -->
+                </div>
+                
+                <div class="assessment-navigation">
+                    <button id="prev-btn" class="btn btn--outline" onclick="window.previousQuestion()" type="button" disabled>
+                        Previous
+                    </button>
+                    <!-- Next button removed as per user request -->
+                    <!-- <button id="next-btn" class="btn btn--primary" onclick="window.nextQuestion()" type="button" disabled>
+                        Next
+                    </button> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="results-screen" class="page">
+        <div class="container">
+            <div class="results-header">
+                <h2>Your Mental Wellness Analysis</h2>
+                <p>Based on your responses, here's your comprehensive mood assessment and personalized recommendations</p>
+            </div>
+
+            <div class="mood-result card">
+                <div class="card__body">
+                    <div class="mood-display">
+                        <div id="mood-icon" class="mood-icon">😊</div>
+                        <div class="mood-info">
+                            <h3 id="mood-category">Calculating...</h3>
+                            <p id="mood-description">Processing your responses...</p>
+                            <div class="mood-score">
+                                <span>Overall Score: </span>
+                                <span id="mood-score">--/100</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="primary-concerns" class="primary-concerns">
+                        <h4>Primary Areas of Concern:</h4>
+                        <div id="concerns-list" class="concerns-list">
+                            <!-- Concerns will be populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recommendations-section">
+                <h3>Personalized Recommendations</h3>
+                
+                <div class="recommendation-tabs">
+                    <button class="tab-btn active" onclick="window.showRecommendationTab('immediate')" type="button">Immediate Actions</button>
+                    <button class="tab-btn" onclick="window.showRecommendationTab('short-term')" type="button">This Week</button>
+                    <button class="tab-btn" onclick="window.showRecommendationTab('long-term')" type="button">Long-term Plan</button>
+                </div>
+
+                <div id="immediate-tab" class="recommendation-tab active">
+                    <div class="card">
+                        <div class="card__body">
+                            <h4>What You Can Do Right Now (Next 24 Hours)</h4>
+                            <div id="immediate-recommendations" class="recommendations-list">
+                                <!-- Immediate recommendations will be populated -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="short-term-tab" class="recommendation-tab">
+                    <div class="card">
+                        <div class="card__body">
+                            <h4>Actions for This Week</h4>
+                            <div id="short-term-recommendations" class="recommendations-list">
+                                <!-- Short-term recommendations will be populated -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="long-term-tab" class="recommendation-tab">
+                    <div class="card">
+                        <div class="card__body">
+                            <h4>Long-term Wellness Plan</h4>
+                            <div id="long-term-recommendations" class="recommendations-list">
+                                <!-- Long-term recommendations will be populated -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recommended-videos card">
+                <div class="card__body">
+                    <h3>Recommended Videos for Your Mental State</h3>
+                    <p>Based on your assessment results, here are some helpful YouTube videos tailored to your current mental wellness level:</p>
+                    <div id="youtube-videos" class="videos-list">
+                        <!-- Videos will be populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="general-suggestions card">
+                <div class="card__body">
+                    <h3>General Suggestions</h3>
+                    <ul class="tips-list">
+                        <li>Maintain a Consistent Sleep Schedule: Aim for 7-9 hours of quality sleep with regular bed and wake times.</li>
+                        <li>Practice Regular Physical Activity: Engage in at least 30 minutes of moderate exercise most days to boost mood and energy.</li>
+                        <li>Incorporate Mindfulness Practices: Spend 5-10 minutes daily on meditation or deep breathing to reduce stress and improve focus.</li>
+                        <li>Build and Maintain Social Connections: Stay connected with trusted friends and family to enhance emotional support.</li>
+                        <li>Set Realistic Goals and Break Tasks into Manageable Steps: Avoid overwhelm by prioritizing tasks and celebrating small wins.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="results-actions">
+                <button class="btn btn--primary" onclick="window.retakeAssessment()" type="button">
+                    Retake Assessment
+                </button>
+            <button class="btn btn--outline" onclick="window.downloadResults()" type="button">
+                Download Results
+            </button>
+            <button class="btn btn--outline" onclick="logout()" type="button" style="margin-left: 12px;">
+                Logout
+            </button>
+        </div>
+        </div>
+    </div>
+
+    <!-- Resources Screen -->
+    <div id="resources-screen" class="page">
+        <div class="container">
+            <div class="page-header">
+                <button class="back-btn" onclick="window.showResults()" type="button">←</button>
+                <h2>Mental Health Resources</h2>
+            </div>
+
+            <div class="resources-content">
+                <div class="resource-categories">
+                    <div class="resource-category card">
+                        <div class="card__body">
+                            <h4>📚 Academic Stress Management</h4>
+                            <ul class="tips-list">
+                                <li>Break study sessions into manageable chunks (25-minute intervals)</li>
+                                <li>Set realistic goals based on your capability, not others' expectations</li>
+                                <li>Remember that grades don't define your worth</li>
+                                <li>Talk to teachers or counselors about academic concerns</li>
+                                <li>Explore multiple career paths beyond traditional options</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="resource-category card">
+                        <div class="card__body">
+                            <h4>👨‍👩‍👧‍👦 Family Relationship Improvement</h4>
+                            <ul class="tips-list">
+                                <li>Practice respectful communication with family members</li>
+                                <li>Set healthy boundaries while respecting family values</li>
+                                <li>Find one understanding family member for support</li>
+                                <li>Gradually introduce your perspectives rather than sudden announcements</li>
+                                <li>Seek family counseling if conflicts are severe</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="resource-category card">
+                        <div class="card__body">
+                            <h4>🎯 Managing Cultural Pressures</h4>
+                            <ul class="tips-list">
+                                <li>Learn to separate individual choices from collective reputation</li>
+                                <li>Avoid social media comparisons - you see highlight reels, not reality</li>
+                                <li>Build a support network of like-minded peers</li>
+                                <li>Research success stories in unconventional career paths</li>
+                                <li>Practice self-compassion and validate your own feelings</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="resource-category card">
+                        <div class="card__body">
+                            <h4>💪 Physical & Emotional Wellness</h4>
+                            <ul class="tips-list">
+                                <li>Maintain regular sleep schedule (7-8 hours nightly)</li>
+                                <li>Exercise for at least 30 minutes daily, even just walking</li>
+                                <li>Practice mindfulness or meditation for 10 minutes daily</li>
+                                <li>Eat regular, nutritious meals and stay hydrated</li>
+                                <li>Engage in activities you genuinely enjoy</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="professional-help card">
+                    <div class="card__body">
+                        <h4>🏥 When to Seek Professional Help</h4>
+                        <p>Consider reaching out to a mental health professional if you experience:</p>
+                        <ul>
+                            <li>Persistent feelings of sadness or hopelessness</li>
+                            <li>Thoughts of self-harm or suicide</li>
+                            <li>Significant changes in sleep, appetite, or daily functioning</li>
+                            <li>Inability to cope with daily stressors</li>
+                            <li>Extreme distress due to family or social pressures</li>
+                            <li>Substance use as a coping mechanism</li>
+                        </ul>
+                        <p><strong>Remember:</strong> Seeking help is a sign of strength, not weakness.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Crisis Modal -->
+    <div id="crisis-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🚨 Crisis Support</h3>
+                <button class="close-btn" onclick="window.closeCrisisModal()" type="button">×</button>
+            </div>
+            <div class="modal-body">
+                <p><strong>If you're in immediate danger, please call emergency services: 100</strong></p>
+
+                <div class="crisis-contacts">
+                    <h4>24/7 Mental Health Crisis Lines:</h4>
+                    <div class="contact-item">
+                        <strong>Vandrevala Foundation</strong>
+                        <p><a href="tel:9999666555" class="btn btn--primary" target="_blank">Call 9999666555</a></p>
+                        <p><small>Available in Hindi, English, Tamil, Telugu, Marathi</small></p>
+                    </div>
+                    <div class="contact-item">
+                        <strong>AASRA Mumbai</strong>
+                        <p><a href="tel:022-27546669" class="btn btn--primary" target="_blank">Call 022-27546669</a></p>
+                        <p><small>Available in Hindi, English, Marathi</small></p>
+                    </div>
+                </div>
+
+                <div class="safety-reminder">
+                    <h4>Remember:</h4>
+                    <ul>
+                        <li>You are not alone</li>
+                        <li>This feeling is temporary</li>
+                        <li>Help is available 24/7</li>
+                        <li>Your life has value and meaning</li>
+                        <li>There are solutions to your problems</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

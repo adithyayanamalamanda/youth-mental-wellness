@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login - Mental Wellness Assessment</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="auth-container">
+        <h1>Login</h1>
+
+        <div class="divider">
+            <span>or</span>
+        </div>
+
+        <form id="login-form">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required />
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required />
+
+            <button type="submit" class="btn btn--primary">Login</button>
+        </form>
+<button type="button" class="btn btn--outline" onclick="loginAsDemo()">Login as Demo</button>
+
+<script>
+    function loginAsDemo() {
+        const demoUser = {
+            username: 'Demo User',
+            email: 'demo@example.com',
+            provider: 'demo'
+        };
+        localStorage.setItem('currentUser', JSON.stringify(demoUser));
+        window.location.href = 'index.html';
+    }
+</script>
+        <p>Don't have an account? <a href="register.html">Register here</a></p>
+
+        <!-- Social Login Buttons -->
+        <div class="social-login">
+            <button type="button" class="btn btn--social btn--google" onclick="loginWithGoogle()">
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-label="Google logo" role="img" focusable="false">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+        const form = document.getElementById('login-form');
+        const errorDiv = document.getElementById('login-error');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const email = form.email.value.trim();
+            const password = form.password.value;
+
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.email === email && u.password === password);
+
+            if (user) {
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                window.location.href = 'index.html';
+            } else {
+                alert('Invalid email or password.');
+            }
+        });
+
+        async function handleCredentialResponse(response) {
+            try {
+                // Decode the JWT token to get user information
+                const responsePayload = decodeJwtResponse(response.credential);
+
+                // Create user object from Google response
+                const googleUser = {
+                    username: responsePayload.name,
+                    email: responsePayload.email,
+                    provider: 'google',
+                    googleId: responsePayload.sub,
+                    picture: responsePayload.picture
+                };
+
+                // Check if user exists in local users array
+                let users = JSON.parse(localStorage.getItem('users') || '[]');
+                const existingUser = users.find(u => u.email === googleUser.email);
+
+                if (existingUser && existingUser.password) {
+                    // User exists and has a password set - login directly
+                    localStorage.setItem('currentUser', JSON.stringify(existingUser));
+                    window.location.href = 'index.html';
+                } else {
+                    // New user or user without password - show setup form
+                    showUserSetupForm(googleUser);
+                }
+
+            } catch (error) {
+                console.error('Error in handleCredentialResponse:', error);
+                alert('There was an error processing your Google login. Please try again.');
+            }
+        }
+
+        function showUserSetupForm(googleUser) {
+            // Hide the login form and show setup form
+            document.querySelector('.auth-container').innerHTML = `
+                <h1>Complete Your Profile</h1>
+                <p>Welcome ${googleUser.username}! Please set up your login details for future access.</p>
+
+                <form id="setup-form">
+                    <label for="setup-username">Username</label>
+                    <input type="text" id="setup-username" name="username" value="${googleUser.username}" required />
+
+                    <label for="setup-password">Password</label>
+                    <input type="password" id="setup-password" name="password" required minlength="6" />
+
+                    <label for="setup-confirm-password">Confirm Password</label>
+                    <input type="password" id="setup-confirm-password" name="confirm-password" required minlength="6" />
+
+                    <button type="submit" class="btn btn--primary">Complete Setup</button>
+                </form>
+            `;
+
+            // Handle setup form submission
+            const setupForm = document.getElementById('setup-form');
+            setupForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+
+                const username = setupForm.username.value.trim();
+                const password = setupForm.password.value;
+                const confirmPassword = setupForm['confirm-password'].value;
+
+                if (password !== confirmPassword) {
+                    alert('Passwords do not match.');
+                    return;
+                }
+
+                // Update user data with username and password
+                const completeUser = {
+                    username: username,
+                    email: googleUser.email,
+                    password: password,
+                    provider: 'google',
+                    googleId: googleUser.googleId,
+                    picture: googleUser.picture
+                };
+
+                // Store user data
+                localStorage.setItem('currentUser', JSON.stringify(completeUser));
+
+                // Add to users array
+                let users = JSON.parse(localStorage.getItem('users') || '[]');
+                const existingUserIndex = users.findIndex(u => u.email === googleUser.email);
+
+                if (existingUserIndex >= 0) {
+                    users[existingUserIndex] = completeUser;
+                } else {
+                    users.push(completeUser);
+                }
+                localStorage.setItem('users', JSON.stringify(users));
+
+                // Send welcome email
+                console.log('Sending welcome email to:', completeUser.email);
+                try {
+                    const emailResponse = await fetch('http://localhost:3001/api/send-welcome-email', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            email: completeUser.email,
+                            name: completeUser.username
+                        })
+                    });
+
+                    const emailResult = await emailResponse.json();
+                    if (emailResult.success) {
+                        console.log('Welcome email sent successfully!');
+                        alert('Welcome email sent to your Google account! Please check your inbox.');
+                    } else {
+                        console.error('Failed to send welcome email:', emailResult.error);
+                        alert('Account created successfully, but there was an issue sending the welcome email.');
+                    }
+                } catch (emailError) {
+                    console.error('Error sending welcome email:', emailError);
+                    alert('Account created successfully! (Note: Email service may not be running)');
+                }
+
+                // Redirect to main application
+                window.location.href = 'index.html';
+            });
+        }
+
+        function decodeJwtResponse(token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+
+            return JSON.parse(jsonPayload);
+        }
+
+        function loginWithFacebook() {
+            // Simulate Facebook OAuth login (in a real app, this would redirect to Facebook Login)
+            alert('Facebook login simulation - redirecting to assessment...');
+
+            // Create a mock user for demo purposes
+            const mockUser = {
+                username: 'Facebook User',
+                email: 'user@facebook.com',
+                provider: 'facebook'
+            };
+
+            localStorage.setItem('currentUser', JSON.stringify(mockUser));
+            window.location.href = 'index.html';
+        }
+
+        // Initialize Google Sign-In
+        window.onload = function() {
+            google.accounts.id.initialize({
+                client_id: '187081419419-buj3h9j8i55b6uc2svv81h12jplph2gt.apps.googleusercontent.com',
+                callback: handleCredentialResponse
+            });
+
+            google.accounts.id.renderButton(
+                document.querySelector('.btn--google'),
+                {
+                    theme: 'outline',
+                    size: 'large',
+                    text: 'continue_with',
+                    shape: 'rectangular'
+                }
+            );
+        }
+    </script>
+</body>
+</html>
