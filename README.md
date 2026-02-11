@@ -1,158 +1,116 @@
-# Mental Wellness Assessment Tool
+# 🧠 Mental Wellness Assessment Tool
 
-A comprehensive mental wellness assessment application with Google OAuth integration and automated email functionality.
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Status](https://img.shields.io/badge/status-active-success.svg)
+![Node](https://img.shields.io/badge/node-%3E%3D14.0.0-green.svg)
 
-## Features
+A comprehensive, culturally sensitive mental wellness assessment application designed for Indian youth. This tool integrates Google OAuth for secure access and provides automated, personalized feedback via email and PDF reports.
 
-- **Mental Wellness Assessment**: Comprehensive 5-step assessment covering academic stress, family dynamics, social relationships, physical/emotional health, and cultural/societal factors
-- **Google OAuth Integration**: Secure login with Google accounts
-- **Automated Welcome Emails**: Sends personalized welcome emails after Google account selection
-- **Personalized Recommendations**: AI-powered recommendations based on assessment results
-- **Progress Tracking**: Track mental wellness progress over time
-- **PDF Report Generation**: Download detailed assessment reports
-- **Responsive Design**: Works on desktop and mobile devices
+## ✨ Features
 
-## Setup Instructions
+- **Comprehensive Assessment**: 5-step analysis covering:
+  - 📚 Academic Stress
+  - 👨‍👩‍👧‍👦 Family Dynamics
+  - 🤝 Social & Personal Relationships
+  - 💪 Physical & Emotional Health
+  - 🕉️ Cultural & Societal Factors
+- **Secure Authentication**: Seamless login with Google OAuth.
+- **Automated Communication**: Instant welcome emails and OTP verification.
+- **AI-Driven Insights**: Personalized recommendations based on assessment scores.
+- **Professional Reports**: Generate and download detailed PDF assessment reports.
+- **Responsive Design**: Optimized for both desktop and mobile experiences.
+- **Dark Mode**: User-friendly dark mode for comfortable viewing.
+- **Privacy First**: Secure handling of sensitive user data.
+
+## 🛠️ Tech Stack
+
+**Frontend**
+- HTML5, CSS3 (Custom Properties), JavaScript (ES6+)
+- OAuth 2.0 (Google Identity Services)
+- jsPDF (Report Generation)
+
+**Backend**
+- Node.js & Express.js
+- MySQL (Database)
+- Nodemailer (Email Service)
+- JSON Web Tokens (JWT)
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js (v14 or higher)
-- npm or yarn
-- Gmail account for sending emails
+- Node.js (v14+)
+- MySQL Server
+- Gmail Account (for email services)
 
-### 1. Install Dependencies
+### Installation
 
-```bash
-npm install
-```
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/adithyayanamalamanda/youth-mental-wellness.git
+    cd youth-mental-wellness
+    ```
 
-### 2. Configure Email Settings
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
 
-1. **Enable 2-Factor Authentication** on your Gmail account
-2. **Generate an App Password**:
-   - Go to Google Account settings
-   - Security → 2-Step Verification → App passwords
-   - Generate a password for "Mail"
-   - Copy the 16-character password
+3.  **Configure Environment**
+    Create a `.env` file in the root directory:
+    ```env
+    # Email Configuration
+    EMAIL_USER=your-email@gmail.com
+    EMAIL_PASS=your-app-specific-password
+    
+    # Database Configuration (if not using default local)
+    DB_HOST=localhost
+    DB_USER=root
+    DB_PASS=your_password
+    DB_NAME=mood_assessment
+    ```
 
-3. **Set Environment Variables**:
-   Create a `.env` file in the root directory:
-   ```env
-   EMAIL_USER=your-gmail@gmail.com
-   EMAIL_PASS=your-16-character-app-password
-   ```
+4.  **Database Setup**
+    Import the `mysql-setup.sql` file into your MySQL database to create the necessary tables.
 
-### 3. Start the Email Service
+### Running the Application
 
-```bash
-# Start the backend email service
-npm start
-```
+1.  **Start the Server** (Runs both backend and serves frontend)
+    ```bash
+    npm start
+    ```
 
-The email service will run on `http://localhost:3001`
+2.  **Access the App**
+    Open [http://localhost:3001](http://localhost:3001) in your browser.
 
-### 4. Start the Frontend
-
-```bash
-# Start the frontend application
-npm run serve
-```
-
-The application will be available at `http://localhost:3000`
-
-## Usage
-
-### For Users
-
-1. **Access the Application**: Open `http://localhost:3000` in your browser
-2. **Login with Google**:
-   - Click "Continue with Google"
-   - Select your Google account
-   - A welcome email will be automatically sent to your Gmail account
-   - You'll be redirected to the assessment
-3. **Take Assessment**: Complete the 5-step mental wellness assessment
-4. **View Results**: Get personalized recommendations and wellness tips
-5. **Download Report**: Save your assessment results as a PDF
-
-### For Developers
-
-#### Project Structure
+## 📁 Project Structure
 
 ```
-mood-assessment-tool/
-├── server.js              # Backend email service
-├── package.json           # Dependencies and scripts
-├── index.html            # Main application
-├── login_new.html        # Login page with Google OAuth
-├── style.css             # Application styles
-├── app.js                # Frontend logic
-├── register.html         # Registration page
-└── README.md            # This file
+youth-mental-wellness/
+├── server.js              # Express backend & static file server
+├── app.js                 # Core frontend logic & assessment engine
+├── index.html             # Main application dashboard
+├── login_new.html         # Modern login interface
+├── register.html          # User registration page
+├── style.css              # Global styling & dark mode definitions
+├── mysql-setup.sql        # Database schema
+└── package.json           # Project dependencies
 ```
 
-#### API Endpoints
+## 🤝 Contributing
 
-- `POST /api/send-welcome-email`: Send welcome email to user
-- `GET /api/health`: Health check for email service
+Contributions are welcome! Please follow these steps:
 
-#### Email Template
+1.  Fork the repository.
+2.  Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4.  Push to the branch (`git push origin feature/AmazingFeature`).
+5.  Open a Pull Request.
 
-The welcome email includes:
-- Personalized greeting
-- Assessment overview
-- Next steps guidance
-- Support resources
-- Professional disclaimer
+## 📞 Contact
 
-## Google OAuth Setup
+**Adithya Yanamalamanda** - [GitHub Profile](https://github.com/adithyayanamalamanda)
 
-The application uses Google's OAuth 2.0 for authentication. The client ID is already configured in the code. For production use:
+## 📄 License
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select existing one
-3. Enable Google+ API
-4. Create OAuth 2.0 credentials
-5. Add authorized origins and redirect URIs
-6. Replace the client ID in `login_new.html`
-
-## Security Considerations
-
-- **Email Credentials**: Never commit email credentials to version control
-- **Environment Variables**: Use `.env` files for sensitive configuration
-- **HTTPS**: Use HTTPS in production for OAuth security
-- **CORS**: Configure CORS properly for your domain in production
-
-## Troubleshooting
-
-### Email Not Sending
-
-1. Check that the email service is running (`http://localhost:3001/api/health`)
-2. Verify email credentials in `.env` file
-3. Check Gmail account settings for app passwords
-4. Review server console for error messages
-
-### Google Login Issues
-
-1. Verify the client ID is correct
-2. Check authorized origins in Google Cloud Console
-3. Ensure HTTPS is used in production
-4. Check browser console for JavaScript errors
-
-### Assessment Not Loading
-
-1. Ensure all files are in the correct directory
-2. Check browser console for JavaScript errors
-3. Verify localStorage is enabled in browser
-4. Clear browser cache and try again
-
-## Support
-
-For technical support or questions:
-- Check the browser console for error messages
-- Verify all dependencies are installed
-- Ensure ports 3000 and 3001 are available
-- Check email service logs for issues
-
-## License
-
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
