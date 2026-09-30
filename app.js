@@ -1,5 +1,8 @@
-let userName = '';
-let userAge = '';
+// MindCare Assessment Application Logic
+// Cultural Youth Mental Wellness Assessment with Google Material Symbols
+
+let userName = 'Anonymous';
+let userAge = 'Youth';
 
 // Application state
 let currentStep = 0;
@@ -8,8 +11,18 @@ let assessmentResponses = {};
 let assessmentSteps = [];
 let moodResult = {};
 let primaryConcerns = [];
+let previousScreenId = 'welcome-screen';
 
-// Assessment data from the provided JSON
+// Category Google Material Icons
+const categoryIcons = {
+    academic_stress: "school",
+    family_dynamics: "family_restroom",
+    social_personal: "diversity_3",
+    physical_emotional: "spa",
+    cultural_societal: "public"
+};
+
+// Assessment data
 const assessmentData = {
     academic_stress: [
         {
@@ -22,7 +35,7 @@ const assessmentData = {
             id: "upcoming_exams",
             question: "Do you have any important exams or tests coming up?",
             type: "multiple_choice",
-            options: ["No upcoming exams", "Board exams within 6 months", "Competitive exams (JEE/NEET/etc.)", "University/college exams", "Regular school tests"]
+            options: ["No upcoming exams", "Board exams within 6 months", "Competitive exams (JEE/NEET/CUET/GATE)", "University / College semester exams", "Regular school / internal tests"]
         },
         {
             id: "career_uncertainty",
@@ -34,7 +47,7 @@ const assessmentData = {
             id: "academic_performance",
             question: "How do you feel about your current academic performance?",
             type: "multiple_choice",
-            options: ["Exceeding expectations", "Meeting expectations", "Slightly below expectations", "Significantly below expectations", "Failing to meet any expectations"]
+            options: ["Exceeding my goals", "Meeting expectations", "Slightly below expectations", "Significantly below expectations", "Struggling to meet expectations"]
         }
     ],
     family_dynamics: [
@@ -48,91 +61,91 @@ const assessmentData = {
             id: "family_pressure",
             question: "What type of family pressure do you experience most?",
             type: "multiple_choice",
-            options: ["Academic performance pressure", "Career choice pressure", "Marriage-related pressure", "Financial burden concerns", "Cultural/traditional expectations", "No significant pressure"]
+            options: ["Academic performance pressure", "Career choice pressure", "Marriage & life timeline expectations", "Financial burden concerns", "Cultural & traditional norms", "No significant pressure"]
         },
         {
             id: "family_communication",
-            question: "How comfortable are you discussing your problems with family?",
+            question: "How comfortable are you discussing your personal worries with family?",
             type: "scale",
             options: ["1 (Never comfortable)", "2", "3", "4", "5 (Sometimes)", "6", "7", "8", "9", "10 (Always comfortable)"]
         },
         {
             id: "family_conflict",
-            question: "How often do you experience conflicts with family members?",
+            question: "How often do you experience conflicts or arguments with family members?",
             type: "multiple_choice",
-            options: ["Never", "Rarely (once a month)", "Sometimes (weekly)", "Often (few times a week)", "Daily conflicts"]
+            options: ["Never or rarely", "Occasionally (monthly)", "Sometimes (weekly)", "Frequent (multiple times a week)", "Daily intense conflicts"]
         }
     ],
     social_personal: [
         {
             id: "social_isolation",
-            question: "How often do you feel lonely or isolated?",
+            question: "How often do you feel lonely or emotionally isolated?",
             type: "multiple_choice",
-            options: ["Never", "Rarely", "Sometimes", "Often", "Almost always"]
+            options: ["Rarely or never", "Occasionally", "Sometimes", "Often", "Almost every day"]
         },
         {
             id: "peer_relationships",
-            question: "How satisfied are you with your friendships and peer relationships?",
+            question: "How satisfied are you with your friendships and peer connections?",
             type: "scale",
             options: ["1 (Very unsatisfied)", "2", "3", "4", "5 (Neutral)", "6", "7", "8", "9", "10 (Very satisfied)"]
         },
         {
             id: "self_esteem",
-            question: "How would you rate your confidence and self-esteem lately?",
+            question: "How would you rate your confidence and self-worth lately?",
             type: "scale",
             options: ["1 (Very low)", "2", "3", "4", "5 (Average)", "6", "7", "8", "9", "10 (Very high)"]
         },
         {
             id: "future_anxiety",
-            question: "How anxious do you feel about your future?",
+            question: "How anxious do you feel when thinking about your future?",
             type: "scale",
-            options: ["1 (Not anxious)", "2", "3", "4", "5 (Moderately anxious)", "6", "7", "8", "9", "10 (Extremely anxious)"]
+            options: ["1 (Calm / optimistic)", "2", "3", "4", "5 (Moderately anxious)", "6", "7", "8", "9", "10 (Extremely anxious)"]
         }
     ],
     physical_emotional: [
         {
             id: "sleep_quality",
-            question: "How would you describe your sleep quality recently?",
+            question: "How would you describe your sleep quality and pattern recently?",
             type: "multiple_choice",
-            options: ["Excellent (7-8 hours, restful)", "Good (6-7 hours, mostly restful)", "Fair (5-6 hours, some difficulty)", "Poor (less than 5 hours, restless)", "Very poor (insomnia, frequent waking)"]
+            options: ["Restful & consistent (7-8 hrs)", "Good (6-7 hrs)", "Fair (frequent waking or delays)", "Poor (less than 5 hrs)", "Severely disturbed / Insomnia"]
         },
         {
             id: "energy_levels",
-            question: "How are your energy levels throughout the day?",
+            question: "How are your daily physical energy and motivation levels?",
             type: "multiple_choice",
-            options: ["High energy all day", "Good energy most of the day", "Moderate energy with some fatigue", "Low energy, frequent tiredness", "Exhausted most of the time"]
+            options: ["High and sustained all day", "Good energy most of the day", "Moderate energy with occasional fatigue", "Low energy, constantly drained", "Chronically exhausted"]
         },
         {
             id: "concentration",
-            question: "How is your ability to concentrate on tasks?",
+            question: "How is your ability to maintain focus and concentrate on tasks?",
             type: "multiple_choice",
-            options: ["Excellent focus", "Good focus most times", "Some difficulty concentrating", "Frequent concentration problems", "Unable to focus on anything"]
+            options: ["Sharp & clear focus", "Generally good focus", "Easily distracted at times", "Frequent brain fog & difficulty", "Unable to concentrate on anything"]
         },
         {
             id: "emotional_stability",
-            question: "How stable have your emotions been lately?",
+            question: "How stable have your mood and emotions been recently?",
             type: "multiple_choice",
-            options: ["Very stable, consistent mood", "Generally stable", "Some mood swings", "Frequent emotional ups and downs", "Extreme emotional instability"]
+            options: ["Very stable & positive", "Generally calm", "Occasional mood swings", "Frequent emotional ups and downs", "Overwhelming swings / numbness"]
         }
     ],
     cultural_societal: [
         {
             id: "societal_expectations",
-            question: "How much do societal expectations (what people think) affect your decisions?",
+            question: "How much does worry over social perception ('Log kya kahenge') influence you?",
             type: "scale",
             options: ["1 (Not at all)", "2", "3", "4", "5 (Moderately)", "6", "7", "8", "9", "10 (Completely)"]
         },
         {
             id: "cultural_conflict",
-            question: "Do you experience conflict between traditional values and your personal beliefs?",
+            question: "Do you experience inner conflict between traditional expectations and your own values?",
             type: "multiple_choice",
-            options: ["No conflict at all", "Minor conflicts occasionally", "Moderate conflicts regularly", "Significant conflicts often", "Major conflicts constantly"]
+            options: ["No conflict at all", "Minor occasional friction", "Moderate regular friction", "Significant frequent conflict", "Intense constant conflict"]
         },
         {
             id: "social_media_impact",
-            question: "How does social media affect your mood and self-perception?",
+            question: "How does social media scrolling affect your self-perception and mental state?",
             type: "multiple_choice",
-            options: ["Positive impact", "No significant impact", "Sometimes negative", "Often makes me feel worse", "Very negative impact"]
+            options: ["Positive & inspiring", "Neutral / No effect", "Occasionally causes comparison", "Often triggers inadequacy", "Severely worsens anxiety"]
         }
     ]
 };
@@ -141,843 +154,276 @@ const assessmentData = {
 const moodCategories = {
     excellent: {
         name: "Excellent Mental State",
-        description: "You are doing very well – feeling happy, balanced, and productive. The goal here is to keep it that way by maintaining good habits.",
-        color: "#f0f9f0",
+        description: "You are thriving with high resilience, balance, and positive energy. Maintain your foundational sleep, social, and mindfulness habits to sustain this momentum.",
+        color: "#10b981",
+        iconSymbol: "sentiment_very_satisfied",
         icon: "😊"
     },
     good: {
         name: "Good Mental State",
-        description: "You are mostly fine but sometimes feel a little stressed. Focus on keeping balance and preventing stress from growing.",
-        color: "#f0f8ff",
+        description: "You are generally balanced with healthy coping capacity. Minor stressors are manageable, and proactive self-care will keep stress from compounding.",
+        color: "#0d9488",
+        iconSymbol: "sentiment_satisfied",
         icon: "🙂"
     },
     moderate_stress: {
         name: "Moderate Stress Level",
-        description: "You are feeling stressed in a noticeable way. Focus on relaxing, sharing with others, and adding support.",
-        color: "#fff8e1",
+        description: "You are experiencing noticeable emotional or academic stress. Introducing structured study pauses, open communication, and grounding exercises will restore equilibrium.",
+        color: "#f59e0b",
+        iconSymbol: "sentiment_neutral",
         icon: "😐"
     },
     high_stress: {
         name: "High Stress Level",
-        description: "Stress feels very heavy and may be affecting sleep, focus, or emotions. You need strong coping skills and close monitoring.",
-        color: "#fff3e0",
+        description: "Stress feels heavy and is starting to impact focus, mood, or sleep. It is important to set healthy boundaries, scale back non-essential pressure, and consult a counselor.",
+        color: "#f97316",
+        iconSymbol: "sentiment_dissatisfied",
         icon: "😟"
     },
     crisis: {
         name: "Crisis Level - Immediate Support Needed",
-        description: "This is a very serious stage. The person needs immediate professional help. Self-help alone is not enough.",
-        color: "#fce4ec",
+        description: "You are carrying an overwhelming emotional burden. Please remember you do not have to endure this alone. Confidential professional helplines and supportive counselors are ready 24/7.",
+        color: "#ef4444",
+        iconSymbol: "crisis_alert",
         icon: "😰"
     }
 };
 
-// YouTube videos by mood category
+// YouTube recommendations by category
 const youtubeVideos = {
     excellent: [
         {
-            title: "6 Easy Habits to Elevate Your Mental Wellness",
+            title: "6 Daily Habits That Elevate Mental Wellness",
             url: "https://www.youtube.com/watch?v=hlE2uL3m6W0"
         },
         {
-            title: "Mental Wellness Playlist (Exercises, Tips & Techniques)",
+            title: "Mindfulness & Peak Performance Playlist",
             url: "https://www.youtube.com/playlist?list=PL-wiTtpoOGDuNbzxFb3f4XSNmpPr0vYjo"
         }
     ],
     good: [
         {
-            title: "Atomic Habits for Mental Health",
+            title: "Atomic Habits for Mental Resilience",
             url: "https://www.youtube.com/watch?v=AOHT-YiOeQA"
         },
         {
-            title: "Mental Wellness and Lifestyle | APA",
-            url: "https://www.youtube.com/watch?v=0amLuVS343M"
+            title: "Box Breathing 4-4-4-4 Relaxation Technique",
+            url: "https://www.youtube.com/watch?v=tEmt1Znux58"
         },
         {
-            title: "Box Breathing Relaxation Technique",
-            url: "https://www.youtube.com/watch?v=tEmt1Znux58"
+            title: "Navigating Study & Lifestyle Balance",
+            url: "https://www.youtube.com/watch?v=0amLuVS343M"
         }
     ],
     moderate_stress: [
         {
-            title: "5 Steps to Rapidly Reduce Stress",
+            title: "5 Rapid Steps to Calm Overthinking & Stress",
             url: "https://www.youtube.com/watch?v=1WIHlVZcrzs"
         },
         {
-            title: "Mindfulness & Meditation – A Grounding Exercise (Mayo Clinic)",
+            title: "Mindfulness & Meditation Grounding (Mayo Clinic)",
             url: "https://www.youtube.com/watch?v=t5LO8JaRszg"
         },
         {
-            title: "Get Yourself Grounded With These 6 Simple Techniques",
+            title: "Ground Yourself With 6 Practical Somatic Techniques",
             url: "https://www.youtube.com/watch?v=Z7C0v4GfUUI"
         }
     ],
     high_stress: [
         {
-            title: "5 Steps For Crisis Intervention",
-            url: "https://www.youtube.com/watch?v=j7tUQG1xc3o"
-        },
-        {
-            title: "The 5-4-3-2-1 Method: A Grounding Exercise to Manage Anxiety",
+            title: "The 5-4-3-2-1 Sensory Grounding Method for Anxiety",
             url: "https://www.youtube.com/watch?v=30VMIEmA114"
         },
         {
-            title: "Grounding Exercise: Anxiety Skills #5",
+            title: "Anxiety Skills & Nervous System Regulation",
             url: "https://www.youtube.com/watch?v=1ao4xdDK9iE"
+        },
+        {
+            title: "Immediate Coping Steps When Feeling Overwhelmed",
+            url: "https://www.youtube.com/watch?v=j7tUQG1xc3o"
         }
     ],
     crisis: [
         {
-            title: "5 Steps For Crisis Intervention",
+            title: "Immediate Crisis De-escalation & Safe Grounding",
             url: "https://www.youtube.com/watch?v=j7tUQG1xc3o"
         },
         {
-            title: "Grounding Exercise: Anxiety Skills #5",
+            title: "Grounding Exercises for Intense Emotional Distress",
             url: "https://www.youtube.com/watch?v=1ao4xdDK9iE"
         },
         {
-            title: "Mental Health & Wellness: Taking Care of You",
+            title: "Self-Compassion in Times of Acute Pain",
             url: "https://www.youtube.com/watch?v=VXHTZ4KS2yU"
         }
     ]
 };
 
-// Recommendations database
-const recommendations = {
-    academic_stress: {
-        immediate: [
-            "Take a 10-minute break from studying every hour",
-            "Practice deep breathing: 4 counts in, 4 counts hold, 4 counts out",
-            "Write down your top 3 study priorities for today",
-            "Remind yourself: 'I am more than my grades'"
-        ],
-        short_term: [
-            "Create a realistic study schedule with breaks",
-            "Talk to a teacher or counselor about your academic concerns",
-            "Practice relaxation techniques before exams",
-            "Set achievable daily study goals"
-        ],
-        long_term: [
-            "Explore multiple career paths, not just traditional ones",
-            "Build a support network of peers facing similar challenges",
-            "Develop hobbies outside of academics for balance",
-            "Consider professional counseling for exam anxiety"
-        ]
-    },
-    family_dynamics: {
-        immediate: [
-            "Take space if family discussions become overwhelming",
-            "Practice saying 'I need time to think about this'",
-            "Remember that your happiness matters too",
-            "Reach out to a trusted friend or relative"
-        ],
-        short_term: [
-            "Plan a calm conversation with family about your feelings",
-            "Find one family member who might understand your perspective",
-            "Set small boundaries and communicate them respectfully",
-            "Write down your thoughts before difficult conversations"
-        ],
-        long_term: [
-            "Work on building mutual understanding with family",
-            "Seek family counseling if conflicts are severe",
-            "Develop independence while maintaining family relationships",
-            "Find balance between family expectations and personal goals"
-        ]
-    },
-    social_personal: {
-        immediate: [
-            "Reach out to one person today, even with a simple message",
-            "Spend time in a public space like a library or park",
-            "Call a friend or family member",
-            "Join an online community related to your interests"
-        ],
-        short_term: [
-            "Attend one social activity or event this week",
-            "Join a club, sports team, or volunteer organization",
-            "Practice social skills in low-pressure situations",
-            "Set a goal to have one meaningful conversation daily"
-        ],
-        long_term: [
-            "Work on building deep, meaningful friendships",
-            "Address underlying social anxiety if present",
-            "Develop confidence through personal interests and hobbies",
-            "Consider therapy to work on social skills and self-esteem"
-        ]
-    },
-    physical_emotional: {
-        immediate: [
-            "Take 5 deep breaths focusing on your exhale",
-            "Do 10 minutes of light stretching or movement",
-            "Drink a glass of water and have a healthy snack",
-            "Step outside for fresh air, even if just for a few minutes"
-        ],
-        short_term: [
-            "Establish a consistent sleep schedule with 7-8 hours nightly",
-            "Incorporate 20-30 minutes of physical activity daily",
-            "Practice mindfulness or meditation for 10 minutes daily",
-            "Monitor and improve your eating habits"
-        ],
-        long_term: [
-            "Build sustainable exercise habits that you enjoy",
-            "Develop a strong sleep hygiene routine",
-            "Learn stress management techniques like progressive muscle relaxation",
-            "Consider professional help if physical symptoms persist"
-        ]
-    },
-    cultural_societal: {
-        immediate: [
-            "Acknowledge that cultural conflicts are normal for young people",
-            "Take time to understand both perspectives",
-            "Practice self-compassion - you're navigating complex situations",
-            "Connect with peers who face similar cultural challenges"
-        ],
-        short_term: [
-            "Have respectful conversations with family about your viewpoints",
-            "Find cultural mentors who've navigated similar conflicts",
-            "Research successful people who've balanced tradition and modernity",
-            "Practice expressing your beliefs assertively but respectfully"
-        ],
-        long_term: [
-            "Develop a personal value system that honors both cultures",
-            "Build a support network of culturally aware friends",
-            "Consider cultural counseling to navigate identity conflicts",
-            "Work on building bridges between traditional and modern values"
-        ]
-    },
-    crisis_support: {
-        immediate: [
-            "Contact a crisis helpline immediately",
-            "Reach out to a trusted adult or friend",
-            "Remove any means of self-harm from your environment",
-            "Stay with someone or go to a safe public place"
-        ],
-        helplines: [
-            "Vandrevala Foundation: 9999666555 (24/7)",
-            "AASRA: 022-27546669 (24/7)",
-            "Sneha Foundation: 044-24640050 (24/7)",
-            "National Suicide Prevention: 022-25521111"
-        ]
-    }
-};
-
-// Detailed recommendations for each mental state level
+// Detailed Action Plan recommendations
 const detailedRecommendations = {
     excellent: {
         immediate: [
-            "Do the 4-7-8 breathing exercise: inhale for 4 seconds, hold for 7, exhale for 8. Do this once after waking up and once before sleeping to stay calm and fresh.",
-            "Share your good mood with a friend or family member. Talking positively helps you and also makes them happier.",
-            "Write in a gratitude journal for 5 minutes: note down 2–3 things you are thankful for."
+            "Practice 4-7-8 deep breathing once in the morning to start centered and focused.",
+            "Write down 3 specific things you are grateful for today in a quick 2-minute note.",
+            "Share a word of genuine encouragement with a friend or peer facing exam pressure."
         ],
         short_term: [
-            "Talk to loved ones twice this week and use \"I feel… I need…\" to express yourself (example: \"I feel tired, I need some quiet time\"). This builds strong bonds.",
-            "Try the Pomodoro technique: study or learn something in 25-minute sessions with short breaks. Use this with a new hobby or skill.",
-            "Join one group or online community related to your interest (coding, reading, etc.)."
+            "Maintain the 25-minute Pomodoro method when learning new complex subjects.",
+            "Schedule at least two intentional 30-minute digital detox walks outdoors this week.",
+            "Join or mentor a study/interest group to build collaborative social bonds."
         ],
         long_term: [
-            "Talk with someone experienced (informational interview) to learn about future career or projects.",
-            "Host a small family meeting to solve problems together and improve teamwork.",
-            "Join a monthly mindfulness workshop or support group to strengthen your mental health further."
+            "Conduct exploratory informational interviews with professionals in fields of your interest.",
+            "Cultivate a sustainable creative hobby (sketching, music, sports) alongside your studies.",
+            "Consistently guard your 7-8 hours sleep window against late-night blue light exposure."
         ]
     },
     good: {
         immediate: [
-            "Try Box Breathing: breathe in for 4 seconds, hold 4, out for 4, hold 4. Do this 5 times.",
-            "Call a trusted friend and talk for a few minutes to feel connected.",
-            "Listen to a short guided meditation to relax your mind."
+            "Practice 3 cycles of Box Breathing (Inhale 4s, Hold 4s, Exhale 4s, Hold 4s).",
+            "Call or message a trusted friend for a casual 5-minute check-in.",
+            "Step outside for 10 minutes of direct natural sunlight to reset circadian rhythm."
         ],
         short_term: [
-            "Use \"I\" statements with family to ask for support: \"I need quiet time to study.\" This avoids arguments.",
-            "Try the Eisenhower Matrix: sort tasks into urgent–important vs not urgent–not important to manage time.",
-            "Plan one social activity (outing or video call) with friends."
+            "Use 'I feel... I need...' communication to clarify study boundaries with your family.",
+            "Sort your weekly assignments using the Eisenhower Matrix (Urgent vs Important).",
+            "Dedicate 15 minutes before bedtime to gentle stretching or ambient music."
         ],
         long_term: [
-            "Do a skills check and take an online course to grow in studies or career.",
-            "Plan one family activity like a game night or outing.",
-            "Attend 2 local workshops or group therapy sessions to share and learn from others."
+            "Establish a clear non-negotiable weekly rest day or rest afternoon.",
+            "Explore skills courses outside standard syllabus to build self-directed confidence.",
+            "Build positive social circles that encourage open emotional discussion."
         ]
     },
     moderate_stress: {
         immediate: [
-            "Do Progressive Muscle Relaxation: tense and relax muscles from toes up to head.",
-            "Write down 3 worries and then write 3 things you are thankful for. This balances your thinking.",
-            "Take a 5-minute brisk walk to release stress."
+            "Perform Progressive Muscle Relaxation: Tense each muscle group for 5s, then release.",
+            "Write down your top 3 current worries, then beside each write 1 actionable micro-step.",
+            "Take a 10-minute break away from your study desk immediately."
         ],
         short_term: [
-            "Write a letter or note to family explaining your stress and what kind of help you need.",
-            "Use a Pomodoro schedule: study in 25 minutes, then take a 15-minute break.",
-            "Join an online study or support group to not feel alone."
+            "Have an honest, calm conversation with a family member about your current workload.",
+            "Break large syllabus units into bite-sized 20-minute daily review sessions.",
+            "Limit social media usage to 30 minutes daily to reduce comparative anxiety."
         ],
         long_term: [
-            "Schedule 2 conversations with professionals or seniors to learn about future paths. Also, take a personality test to know yourself better.",
-            "Have weekly family meetings where one member leads discussion. This shares responsibility.",
-            "Go for counseling sessions (like CBT therapy) to learn tools for managing stress."
+            "Schedule a session with an academic mentor or counselor to organize realistic milestones.",
+            "Develop assertive communication habits for handling family and peer expectations.",
+            "Adopt mindfulness journaling to recognize stress patterns before they escalate."
         ]
     },
     high_stress: {
         immediate: [
-            "Do the Grounding Technique (5-4-3-2-1): name 5 things you see, 4 you feel, 3 you hear, 2 you smell, 1 you taste. This calms racing thoughts.",
-            "Call a support helpline (e.g., AASRA, Snehi) if you feel overwhelmed.",
-            "Splash face with cold water to quickly reduce strong stress feelings."
+            "Use the 5-4-3-2-1 Sensory Grounding: 5 things you see, 4 touch, 3 hear, 2 smell, 1 taste.",
+            "Splash cold water on your face to activate the calming mammalian dive reflex.",
+            "Reach out to a close friend or call a helpline if you need non-judgmental support."
         ],
         short_term: [
-            "Sit with a family member for 10 minutes daily, where they just listen without judgment.",
-            "Limit studies to 3 tasks per day with breaks, so pressure reduces.",
-            "Do 1 community activity (half-day volunteering) to shift focus and feel useful."
+            "Cap daily study goals to no more than 3 high-priority tasks to alleviate overwhelm.",
+            "Ask a trusted family member or mentor to sit with you for supportive, quiet listening.",
+            "Schedule a structured consultation with a licensed youth psychologist or counselor."
         ],
         long_term: [
-            "Try a shadowing opportunity (follow a senior or alum) to get fresh perspective.",
-            "Use collaborative problem-solving with family to handle ongoing issues together.",
-            "Write in a therapy journal and attend group support workshops for shared healing."
+            "Enroll in regular Cognitive Behavioral (CBT) counseling to master thought reframing.",
+            "Work with family to establish realistic career horizons beyond singular test pressures.",
+            "Build a comprehensive stress-reduction routine emphasizing restorative rest."
         ]
     },
     crisis: {
         immediate: [
-            "Call emergency hotlines: AASRA (91-22-27546669), Snehi (91-22-25521111). Professional support is critical.",
-            "Do 4-7-8 breathing only under guidance (to prevent panic).",
-            "Enact a safety plan: remove any harmful items, stay with a trusted person, don\'t be alone."
+            "Call the 24/7 Tele-MANAS helpline (14416) or Vandrevala Foundation (9999666555).",
+            "Stay in the company of a trusted family member, close friend, or mentor right now.",
+            "Practice slow, guided belly breathing and avoid staying in complete isolation."
         ],
         short_term: [
-            "Have at least 2 daily check-ins with a mental health professional or trained volunteer.",
-            "Follow a no-phone, rest-focused schedule with family support.",
-            "Use \"Feel–Need\" statements to express yourself to supporters daily: \"I feel scared, I need someone nearby.\""
+            "Arrange an in-person evaluation with a licensed psychiatrist or mental health clinician.",
+            "Follow a gentle, low-pressure daily routine with family support and no critical decisions.",
+            "Create a personal safety plan with your support system identifying safe spaces and contacts."
         ],
         long_term: [
-            "Join an intensive therapy program with at least 8 sessions.",
-            "Build a stable daily routine of sleep, healthy food, and light exercise.",
-            "Review a safety plan every week with your support team."
+            "Commit to a continuous professional therapy journey with weekly support check-ins.",
+            "Rebuild physical foundations: stable nourishing meals, regular sleep, and gentle walking.",
+            "Remember that healing is non-linear and help is always available to guide you through."
         ]
     }
 };
 
-// Wellness tips
+// Core wellness tips
 const wellnessTips = [
-    "Practice gratitude by writing down 3 good things each day",
-    "Maintain a regular sleep schedule, even on weekends",
-    "Exercise for at least 30 minutes daily, even if it's just walking",
-    "Limit social media use, especially comparison-heavy platforms",
-    "Practice mindfulness or meditation for 10 minutes daily",
-    "Eat regular, nutritious meals and stay hydrated",
-    "Connect with nature by spending time outdoors",
-    "Engage in activities you genuinely enjoy, not just productive ones",
-    "Learn to say no to commitments that overwhelm you",
-    "Seek professional help when self-help strategies aren't enough"
+    "Honor regular sleep: Aim for 7-8 hours with consistent bedtimes to stabilize emotional resilience.",
+    "Movement resets mood: 20-30 minutes of walking or light exercise reduces cortisol levels naturally.",
+    "Separate worth from test scores: Academic exams are milestones, not a measure of your human value.",
+    "Curate your digital diet: Unfollow accounts that trigger negative self-comparison and anxiety.",
+    "Practice assertive empathy: Communicate your boundaries with family respectfully but clearly.",
+    "Mindful pauses: Just 5 minutes of conscious diaphragmatic breathing activates the parasympathetic system."
 ];
 
-window.showUserInfoPopup = function() {
-    const popup = document.getElementById('user-info-popup');
-    if (popup) {
-        popup.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
+// ==========================================================================
+// Initialization & Navigation Flow
+// ==========================================================================
 
-        // Disable the start button initially
-        const startBtn = document.querySelector('#user-info-popup .btn');
-        if (startBtn) {
-            startBtn.disabled = true;
-            startBtn.style.opacity = '0.5';
-            startBtn.style.cursor = 'not-allowed';
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    initializeDarkMode();
+    initializeChatbot();
+    
+    // Auto start on welcome screen
+    showPage('welcome-screen');
+});
 
-        // Add event listeners to inputs for validation
-        const nameInput = document.getElementById('user-name');
-        const ageInput = document.getElementById('user-age');
+// Start assessment directly from welcome screen
+window.startAssessmentDirectly = function() {
+    const nameInput = document.getElementById('user-name-input');
+    const ageInput = document.getElementById('user-age-input');
 
-        const validateInputs = function() {
-            const name = nameInput.value.trim();
-            const age = ageInput.value.trim();
-            const isValid = name.length > 0 && age.length > 0 && !isNaN(age) && parseInt(age) > 0;
+    userName = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : 'Anonymous';
+    userAge = (ageInput && ageInput.value.trim()) ? ageInput.value.trim() : 'Youth';
 
-            if (startBtn) {
-                startBtn.disabled = !isValid;
-                startBtn.style.opacity = isValid ? '1' : '0.5';
-                startBtn.style.cursor = isValid ? 'pointer' : 'not-allowed';
-            }
-        };
-
-        nameInput.addEventListener('input', validateInputs);
-        ageInput.addEventListener('input', validateInputs);
-    }
-};
-
-window.startAssessmentWithUser = function() {
-    // Check if user is logged in
-    const currentUser = localStorage.getItem('currentUser');
-    if (currentUser) {
-        const user = JSON.parse(currentUser);
-        // Automatically set user info from logged-in user
-        userName = user.username || user.name || 'User';
-        userAge = user.age || 18; // Default age if not available
-
-        // Start assessment directly
-        window.startAssessment();
-    } else {
-        // Fallback to popup if no user is logged in
-        window.showUserInfoPopup();
-    }
-};
-
-window.closeUserInfoPopup = function() {
-    const popup = document.getElementById('user-info-popup');
-    if (popup) {
-        popup.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    }
-};
-
-window.submitUserInfo = function() {
-    const nameInput = document.getElementById('user-name');
-    const ageInput = document.getElementById('user-age');
-
-    const name = nameInput.value.trim();
-    const age = ageInput.value.trim();
-
-    if (!name) {
-        alert("Name is required to start the assessment.");
-        return;
-    }
-    if (!age || isNaN(age)) {
-        alert("Valid age is required to start the assessment.");
-        return;
-    }
-
-    userName = name;
-    userAge = age;
-
-    closeUserInfoPopup();
-    window.startAssessment();
-};
-
-// Navigation functions - Define these functions early and make them global immediately
-window.startAssessment = function() {
-    console.log('Starting assessment...');
     initializeAssessment();
     showPage('assessment-screen');
     updateAssessmentDisplay();
 };
 
+// Initialize steps
+function initializeAssessment() {
+    assessmentSteps = [
+        { key: 'academic_stress', name: 'Academic Stress Assessment', questions: assessmentData.academic_stress },
+        { key: 'family_dynamics', name: 'Family Dynamics Assessment', questions: assessmentData.family_dynamics },
+        { key: 'social_personal', name: 'Social & Personal Assessment', questions: assessmentData.social_personal },
+        { key: 'physical_emotional', name: 'Physical & Emotional Assessment', questions: assessmentData.physical_emotional },
+        { key: 'cultural_societal', name: 'Cultural & Societal Assessment', questions: assessmentData.cultural_societal }
+    ];
+
+    currentStep = 0;
+    currentQuestionIndex = 0;
+    assessmentResponses = {};
+}
+
+// Show target screen
 window.showPage = function(pageId) {
-    console.log('Navigating to page:', pageId);
-    
-    // Hide all pages
-    document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-    });
-    
-    // Show target page
-    const targetPage = document.getElementById(pageId);
-    if (targetPage) {
-        targetPage.classList.add('active');
-        console.log('Successfully showed page:', pageId);
-    } else {
-        console.error('Page not found:', pageId);
+    const activePage = document.querySelector('.page.active');
+    if (activePage && activePage.id !== 'resources-screen') {
+        previousScreenId = activePage.id;
+    }
+
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById(pageId);
+    if (target) {
+        target.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 };
 
-
-
-window.previousQuestion = function() {
-    console.log('Previous question clicked');
-    if (currentQuestionIndex > 0) {
-        // Move to previous question in current step
-        currentQuestionIndex--;
-    } else if (currentStep > 0) {
-        // Move to previous step
-        currentStep--;
-        currentQuestionIndex = assessmentSteps[currentStep].questions.length - 1;
-    }
-    
-    updateAssessmentDisplay();
-};
-
-window.selectOption = function(questionId, value, element) {
-    console.log('Option selected:', questionId, value);
-    
-    // Remove previous selections
-    const container = element.parentNode;
-    container.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
-    
-    // Add selection to current element
-    element.classList.add('selected');
-    
-    // Store response
-    assessmentResponses[questionId] = value;
-    
-    // Enable next button
-    updateNavigationButtons();
-
-    // Automatically go to next question after selection
-    setTimeout(() => {
-        window.nextQuestion();
-    }, 300);
-};
-
-window.showRecommendationTab = function(tabName) {
-    console.log('Showing recommendation tab:', tabName);
-    
-    // Hide all tabs
-    document.querySelectorAll('.recommendation-tab').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    
-    // Show selected tab
-    const selectedTab = document.getElementById(`${tabName}-tab`);
-    if (selectedTab) {
-        selectedTab.classList.add('active');
-    }
-    
-    // Update tab buttons
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    // Find the clicked button and make it active
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        if (btn.onclick && btn.onclick.toString().includes(tabName)) {
-            btn.classList.add('active');
-        }
-    });
-};
-
-window.retakeAssessment = function() {
-    if (confirm('Are you sure you want to retake the assessment? This will clear your current results.')) {
-        showPage('welcome-screen');
-    }
-};
-
-window.showResults = function() {
-    showPage('results-screen');
-};
-
+// Resources navigation
 window.showResources = function() {
     showPage('resources-screen');
 };
 
-window.downloadResults = function() {
-    const assessmentId = generateUniqueId();
-    const completionTime = new Date().toLocaleString();
-
-    // Create professional PDF
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    let yPosition = 20;
-
-    // Set up colors and fonts
-    const primaryColor = [79, 70, 229]; // Indigo
-    const secondaryColor = [107, 114, 128]; // Gray
-    const accentColor = [16, 185, 129]; // Green
-
-    // Header with professional branding
-    doc.setFillColor(...primaryColor);
-    doc.rect(0, 0, 210, 40, 'F');
-
-    // Title
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(24);
-    doc.text('Mental Wellness Assessment', 20, 20);
-
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Comprehensive Mood Analysis for Indian Youth', 20, 30);
-
-    // Reset text color
-    doc.setTextColor(0, 0, 0);
-    yPosition = 60;
-
-    // Assessment Information Box
-    doc.setFillColor(248, 250, 252);
-    doc.rect(15, yPosition - 5, 180, 35, 'F');
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.text('Assessment Information', 20, yPosition);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    yPosition += 10;
-    doc.text(`Assessment ID: ${assessmentId}`, 25, yPosition);
-    yPosition += 6;
-    doc.text(`Generated: ${completionTime}`, 25, yPosition);
-    yPosition += 6;
-    doc.text(`Name: ${userName} | Age: ${userAge}`, 25, yPosition);
-    yPosition += 20;
-
-    // Mood Category Section
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.setTextColor(...primaryColor);
-    doc.text('Mental Wellness Status', 20, yPosition);
-    yPosition += 15;
-
-    // Mood score box
-    doc.setFillColor(...accentColor);
-    doc.setTextColor(255, 255, 255);
-    doc.roundedRect(20, yPosition - 3, 50, 15, 3, 3, 'F');
-    doc.setFontSize(14);
-    doc.text(`${moodResult.score}/100`, 30, yPosition + 5);
-
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(12);
-    doc.text(`${moodResult.icon} ${moodResult.name}`, 80, yPosition + 2);
-    yPosition += 15;
-
-    // Description
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    const cleanDescription = personalizeDescription(moodResult.description);
-    const descLines = doc.splitTextToSize(cleanDescription, 160);
-    doc.text(descLines, 25, yPosition);
-    yPosition += descLines.length * 5 + 10;
-
-    // Strengths Section
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.setTextColor(...primaryColor);
-    doc.text('Your Unique Strengths', 20, yPosition);
-    yPosition += 10;
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    getUniqueStrengths().split('\n').forEach(strength => {
-        if (strength.trim()) {
-            doc.text(`• ${strength}`, 25, yPosition);
-            yPosition += 6;
-        }
-    });
-    yPosition += 10;
-
-    // Check if we need a new page
-    if (yPosition > 250) {
-        doc.addPage();
-        yPosition = 20;
-    }
-
-    // Personalized Recommendations Section
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.setTextColor(...primaryColor);
-    doc.text('Personalized Action Plan', 20, yPosition);
-    yPosition += 15;
-
-    // Immediate Actions
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.setTextColor(...primaryColor);
-    doc.text('🚀 Immediate Actions (Next 24-48 hours)', 20, yPosition);
-    yPosition += 10;
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    getPersonalizedRecommendationsText('immediate').split('\n').forEach(rec => {
-        if (rec.trim()) {
-            // Remove only control characters except common punctuation and accented letters
-            const cleanRec = rec.replace(/[\x00-\x1F\x7F]/g, '');
-            const recLines = doc.splitTextToSize(cleanRec, 150);
-            doc.text(recLines, 25, yPosition);
-            yPosition += recLines.length * 5;
-        }
-    });
-    yPosition += 10;
-
-    // Check if we need a new page
-    if (yPosition > 220) {
-        doc.addPage();
-        yPosition = 20;
-    }
-
-    // Short-term Goals
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.setTextColor(...primaryColor);
-    doc.text('📅 Short-Term Goals (Next 1-2 weeks)', 20, yPosition);
-    yPosition += 10;
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    getPersonalizedRecommendationsText('short_term').split('\n').forEach(rec => {
-        if (rec.trim()) {
-            // Remove only control characters except common punctuation and accented letters
-            const cleanRec = rec.replace(/[\x00-\x1F\x7F]/g, '');
-            const recLines = doc.splitTextToSize(cleanRec, 150);
-            doc.text(recLines, 25, yPosition);
-            yPosition += recLines.length * 5;
-        }
-    });
-    yPosition += 10;
-
-    // Check if we need a new page
-    if (yPosition > 200) {
-        doc.addPage();
-        yPosition = 20;
-    }
-
-    // Long-term Development
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.setTextColor(...primaryColor);
-    doc.text('🎯 Long-Term Development (Next 1-3 months)', 20, yPosition);
-    yPosition += 10;
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    getPersonalizedRecommendationsText('long_term').split('\n').forEach(rec => {
-        if (rec.trim()) {
-            // Remove only control characters except common punctuation and accented letters
-            const cleanRec = rec.replace(/[\x00-\x1F\x7F]/g, '');
-            const recLines = doc.splitTextToSize(cleanRec, 150);
-            doc.text(recLines, 25, yPosition);
-            yPosition += recLines.length * 5;
-        }
-    });
-    yPosition += 15;
-
-    // Wellness Tips Section
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.setTextColor(...primaryColor);
-    doc.text('💡 Wellness Tips for Your Journey', 20, yPosition);
-    yPosition += 10;
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    wellnessTips.slice(0, 4).forEach(tip => {
-        // Remove only control characters except common punctuation and accented letters
-        const cleanTip = tip.replace(/[\x00-\x1F\x7F]/g, '');
-        const tipLines = doc.splitTextToSize(`• ${cleanTip}`, 150);
-        doc.text(tipLines, 25, yPosition);
-        yPosition += tipLines.length * 5;
-    });
-    yPosition += 15;
-
-    // Crisis Support Section
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.setTextColor(220, 38, 38); // Red for crisis
-    doc.text('🚨 Crisis Support Resources', 20, yPosition);
-    yPosition += 10;
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    const crisisResources = [
-        'Vandrevala Foundation: 9999666555 (24/7)',
-        'AASRA Mumbai: 022-27546669 (24/7)',
-        'Sneha Foundation: 044-24640050 (24/7)',
-        'National Suicide Prevention: 022-25521111'
-    ];
-
-    crisisResources.forEach(resource => {
-        doc.text(`• ${resource}`, 25, yPosition);
-        yPosition += 6;
-    });
-    yPosition += 15;
-
-    // Professional Footer
-    doc.setFillColor(248, 250, 252);
-    doc.rect(0, 270, 210, 27, 'F');
-
-    doc.setFont('helvetica', 'italic');
-    doc.setFontSize(8);
-    doc.setTextColor(...secondaryColor);
-    const disclaimer = 'This assessment is for informational purposes only and is not a substitute for professional medical advice. Results are based on self-reported responses and should be discussed with a qualified mental health professional for comprehensive support.';
-    const disclaimerLines = doc.splitTextToSize(disclaimer, 180);
-    doc.text(disclaimerLines, 15, 280);
-
-    // Assessment ID in footer
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.text(`Assessment ID: ${assessmentId}`, 15, 295);
-
-    // Download PDF
-    const pdfFileName = `Mental_Wellness_Assessment_${userName.replace(/\s+/g, '_')}_${assessmentId}.pdf`;
-    doc.save(pdfFileName);
-
-    // Store results in localStorage
-    const resultsData = {
-        assessmentId,
-        completionTime,
-        moodResult,
-        primaryConcerns,
-        recommendations: {
-            immediate: getPersonalizedRecommendationsText('immediate'),
-            short_term: getPersonalizedRecommendationsText('short_term'),
-            long_term: getPersonalizedRecommendationsText('long_term')
-        },
-        strengths: getUniqueStrengths(),
-        wellnessTips: wellnessTips.slice(0, 4)
-    };
-
-    let storedResults = JSON.parse(localStorage.getItem('assessmentResults') || '[]');
-    storedResults.push(resultsData);
-    localStorage.setItem('assessmentResults', JSON.stringify(storedResults));
-
-    alert(`Professional assessment report downloaded as "${pdfFileName}" and stored locally!`);
+window.goBackFromResources = function() {
+    showPage(previousScreenId || 'welcome-screen');
 };
 
-function getUniqueStrengths() {
-    const strengths = [];
-    if (assessmentResponses.self_esteem && parseInt(assessmentResponses.self_esteem) >= 7) {
-        strengths.push("- Strong self-confidence and self-worth");
-    }
-    if (assessmentResponses.family_communication && parseInt(assessmentResponses.family_communication) >= 7) {
-        strengths.push("- Effective family communication skills");
-    }
-    if (assessmentResponses.peer_relationships && parseInt(assessmentResponses.peer_relationships) >= 7) {
-        strengths.push("- Healthy social connections and friendships");
-    }
-    if (assessmentResponses.energy_levels && assessmentResponses.energy_levels.includes('High')) {
-        strengths.push("- Good physical energy and vitality");
-    }
-    if (strengths.length === 0) {
-        strengths.push("- Resilience and willingness to seek self-improvement");
-        strengths.push("- Active engagement with personal mental health");
-    }
-    // Remove only control characters except common punctuation and accented letters
-    return strengths.join('\n').replace(/[\x00-\x1F\x7F]/g, '');
-}
-
-function getPersonalizedRecommendationsText(timeframe) {
-    let recommendationsList = detailedRecommendations[moodResult.category]?.[timeframe] || [];
-
-return [...new Set(recommendationsList)].slice(0, 3).map(rec => `- ${rec}`).join('\n').replace(/[\x00-\x1F\x7F]/g, '');
-}
-
-function personalizeDescription(description) {
-    // Simple personalization - could be expanded
-    return description;
-}
-
-function getPersonalizedInsight(category) {
-    // Simple insight based on category
-    const insights = {
-        academic_stress: "Focus on study-life balance",
-        family_dynamics: "Open communication is key",
-        social_personal: "Building connections helps",
-        physical_emotional: "Self-care is important",
-        cultural_societal: "Cultural identity is valuable"
-    };
-    return insights[category] || "Seek professional guidance";
-}
-
-function generateUniqueId() {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
-}
-
-function hexToRgb(hex) {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-    } : null;
-}
-
-// Crisis modal functions
+// Crisis modal controls
 window.showCrisisModal = function() {
-    console.log('Showing crisis modal');
     const modal = document.getElementById('crisis-modal');
     if (modal) {
         modal.classList.remove('hidden');
@@ -986,7 +432,6 @@ window.showCrisisModal = function() {
 };
 
 window.closeCrisisModal = function() {
-    console.log('Closing crisis modal');
     const modal = document.getElementById('crisis-modal');
     if (modal) {
         modal.classList.add('hidden');
@@ -994,163 +439,179 @@ window.closeCrisisModal = function() {
     }
 };
 
-// Initialize assessment steps
-function initializeAssessment() {
-    console.log('Initializing assessment');
-    assessmentSteps = [
-        { name: 'Academic Stress Assessment', questions: assessmentData.academic_stress },
-        { name: 'Family Dynamics Assessment', questions: assessmentData.family_dynamics },
-        { name: 'Social & Personal Assessment', questions: assessmentData.social_personal },
-        { name: 'Physical & Emotional Assessment', questions: assessmentData.physical_emotional },
-        { name: 'Cultural & Societal Assessment', questions: assessmentData.cultural_societal }
-    ];
-    
-    currentStep = 0;
-    currentQuestionIndex = 0;
-    assessmentResponses = {};
-}
+// ==========================================================================
+// Assessment Rendering & Option Selection
+// ==========================================================================
 
 function updateAssessmentDisplay() {
     updateProgressBar();
-    updateStepInfo();
+    updateStepHeader();
     displayCurrentQuestion();
 }
 
 function updateProgressBar() {
-    const totalQuestions = 20; // 5 steps * 4 questions each
-    const questionsPerStep = 4;
-    const currentQuestionNumber = currentStep * questionsPerStep + currentQuestionIndex + 1;
-    const progress = (currentQuestionNumber / totalQuestions) * 100;
+    const totalQuestions = 19; // 4 + 4 + 4 + 4 + 3 questions = 19
+    let answeredCount = 0;
+
+    for (let s = 0; s < currentStep; s++) {
+        answeredCount += assessmentSteps[s].questions.length;
+    }
+    answeredCount += (currentQuestionIndex + 1);
+
+    const progress = Math.min(100, Math.round((answeredCount / totalQuestions) * 100));
 
     const progressFill = document.getElementById('progress-fill');
-    if (progressFill) {
-        progressFill.style.width = `${progress}%`;
-    }
+    const progressText = document.getElementById('progress-text');
+
+    if (progressFill) progressFill.style.width = `${progress}%`;
+    if (progressText) progressText.textContent = `${progress}%`;
 }
 
-function updateStepInfo() {
-    const stepCounter = document.getElementById('step-counter');
+function updateStepHeader() {
+    const stepData = assessmentSteps[currentStep];
+    const categoryIcon = document.getElementById('category-icon');
     const stepTitle = document.getElementById('step-title');
-    
+    const stepCounter = document.getElementById('step-counter');
+
+    if (categoryIcon) categoryIcon.textContent = categoryIcons[stepData.key] || 'psychology';
+    if (stepTitle) stepTitle.textContent = stepData.name;
     if (stepCounter) {
-        // Display current question number within the step as well
-        const currentQuestionNumber = currentQuestionIndex + 1;
-        const totalQuestions = assessmentSteps[currentStep].questions.length;
-        stepCounter.textContent = `Step ${currentStep + 1} of ${assessmentSteps.length} - Question ${currentQuestionNumber} of ${totalQuestions}`;
-    }
-    
-    if (stepTitle) {
-        stepTitle.textContent = assessmentSteps[currentStep].name;
+        const qNum = currentQuestionIndex + 1;
+        const totalQ = stepData.questions.length;
+        stepCounter.textContent = `Step ${currentStep + 1} of ${assessmentSteps.length} • Q${qNum} of ${totalQ}`;
     }
 }
 
 function displayCurrentQuestion() {
     const container = document.getElementById('question-container');
     if (!container) return;
-    
-    const currentStepData = assessmentSteps[currentStep];
-    const question = currentStepData.questions[currentQuestionIndex];
-    
-    container.innerHTML = `
-        <div class="question">
-            <h4>${question.question}</h4>
-            <div class="question-options" id="question-options">
-                ${generateQuestionOptions(question)}
-            </div>
-        </div>
-    `;
-    
-    updateNavigationButtons();
-}
 
-function generateQuestionOptions(question) {
+    const stepData = assessmentSteps[currentStep];
+    const question = stepData.questions[currentQuestionIndex];
+    const questionNum = currentQuestionIndex + 1;
+
+    let optionsHtml = '';
+
     if (question.type === 'scale') {
-        return `
-            <div class="scale-options">
-                ${question.options.map((option, index) => `
-                    <button class="scale-btn" onclick="selectOption('${question.id}', ${index + 1}, this)" data-value="${index + 1}">
-                        ${index + 1}
-                    </button>
-                `).join('')}
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--color-text-secondary);">
-                <span>${question.options[0]}</span>
-                <span>${question.options[question.options.length - 1]}</span>
+        const selectedVal = assessmentResponses[question.id];
+        optionsHtml = `
+            <div class="scale-wrapper">
+                <div class="scale-grid">
+                    ${question.options.map((opt, idx) => {
+                        const val = idx + 1;
+                        const isSelected = selectedVal == val ? 'selected' : '';
+                        return `
+                            <button class="scale-btn ${isSelected}" onclick="window.selectOption('${question.id}', ${val}, this)" type="button" data-val="${val}">
+                                ${val}
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+                <div class="scale-legend">
+                    <div class="scale-legend-item">
+                        <span class="material-symbols-outlined">sentiment_satisfied</span>
+                        <span>${question.options[0]}</span>
+                    </div>
+                    <div class="scale-legend-item">
+                        <span>${question.options[question.options.length - 1]}</span>
+                        <span class="material-symbols-outlined">sentiment_very_dissatisfied</span>
+                    </div>
+                </div>
             </div>
         `;
     } else {
-        return question.options.map((option, index) => `
-            <button class="option-btn" onclick="selectOption('${question.id}', '${option}', this)" data-value="${option}">
-                ${option}
-            </button>
-        `).join('');
+        const selectedVal = assessmentResponses[question.id];
+        optionsHtml = `
+            <div class="mcq-options-list">
+                ${question.options.map(option => {
+                    const isSelected = selectedVal === option ? 'selected' : '';
+                    return `
+                        <button class="option-btn ${isSelected}" onclick="window.selectOption('${question.id}', '${escapeHtml(option)}', this)" type="button">
+                            <div class="option-radio-indicator">
+                                <div class="option-radio-dot"></div>
+                            </div>
+                            <span class="option-text">${option}</span>
+                        </button>
+                    `;
+                }).join('')}
+            </div>
+        `;
     }
-}
 
-function updateNavigationButtons() {
+    container.innerHTML = `
+        <div class="question-header">
+            <span class="question-num-pill">Q${questionNum}</span>
+            <h3 class="question-title">${question.question}</h3>
+        </div>
+        <div class="question-body">
+            ${optionsHtml}
+        </div>
+    `;
+
     const prevBtn = document.getElementById('prev-btn');
-    
     if (prevBtn) {
-        prevBtn.disabled = currentStep === 0 && currentQuestionIndex === 0;
-    }
-
-    // Remove any existing validation messages since Next button is removed
-    const validationMessage = document.getElementById('validation-message');
-    if (validationMessage) {
-        validationMessage.remove();
+        prevBtn.disabled = (currentStep === 0 && currentQuestionIndex === 0);
     }
 }
 
-function validateAssessmentCompletion() {
-    for (let step of assessmentSteps) {
-        for (let question of step.questions) {
-            if (!assessmentResponses.hasOwnProperty(question.id)) {
-                alert('Please complete all questions before finishing the assessment.');
-                return false;
-            }
-        }
-    }
-    return true;
+function escapeHtml(str) {
+    return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 }
 
-window.nextQuestion = function() {
-    console.log('Next question triggered');
-    const currentStepData = assessmentSteps[currentStep];
-    
-    // Check if current question is answered (for manual navigation if needed)
-    const currentQuestion = currentStepData.questions[currentQuestionIndex];
-    if (!assessmentResponses.hasOwnProperty(currentQuestion.id)) {
-        console.log('Current question not answered, cannot proceed');
-        return;
+window.selectOption = function(questionId, value, element) {
+    assessmentResponses[questionId] = value;
+
+    // Visual selection feedback
+    const parent = element.closest('.scale-grid') || element.closest('.mcq-options-list');
+    if (parent) {
+        parent.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
     }
-    
-    if (currentQuestionIndex < currentStepData.questions.length - 1) {
-        // Move to next question in current step
-        currentQuestionIndex++;
-    } else if (currentStep < assessmentSteps.length - 1) {
-        // Move to next step
-        currentStep++;
-        currentQuestionIndex = 0;
-    } else {
-        // Assessment complete
-        if (validateAssessmentCompletion()) {
-            completeAssessment();
-        }
-        return;
+    element.classList.add('selected');
+
+    // Auto advance after brief micro-delay
+    setTimeout(() => {
+        advanceQuestion();
+    }, 280);
+};
+
+window.previousQuestion = function() {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+    } else if (currentStep > 0) {
+        currentStep--;
+        currentQuestionIndex = assessmentSteps[currentStep].questions.length - 1;
     }
-    
     updateAssessmentDisplay();
 };
 
-function completeAssessment() {
-    console.log('Assessment completed');
-    calculateMoodResult();
-    identifyPrimaryConcerns();
-    showPage('results-screen');
-    displayResults();
+function advanceQuestion() {
+    const stepData = assessmentSteps[currentStep];
+
+    if (currentQuestionIndex < stepData.questions.length - 1) {
+        currentQuestionIndex++;
+        updateAssessmentDisplay();
+    } else if (currentStep < assessmentSteps.length - 1) {
+        currentStep++;
+        currentQuestionIndex = 0;
+        updateAssessmentDisplay();
+    } else {
+        // Complete assessment
+        finishAssessment();
+    }
 }
 
-function calculateMoodResult() {
+// ==========================================================================
+// Results Calculation & Display
+// ==========================================================================
+
+function finishAssessment() {
+    calculateResults();
+    identifyFocusAreas();
+    showPage('results-screen');
+    renderResultsScreen();
+}
+
+function calculateResults() {
     let totalScore = 0;
     let maxScore = 0;
     let categoryScores = {
@@ -1160,425 +621,394 @@ function calculateMoodResult() {
         physical_emotional: 0,
         cultural_societal: 0
     };
-    
-    // Calculate scores for each category
-    Object.keys(assessmentData).forEach(category => {
-        const questions = assessmentData[category];
-        let categoryScore = 0;
-        let categoryMax = 0;
-        
-        questions.forEach(question => {
-            const response = assessmentResponses[question.id];
-            if (response !== undefined) {
+
+    Object.keys(assessmentData).forEach(catKey => {
+        const questions = assessmentData[catKey];
+        let catScore = 0;
+        let catMax = 0;
+
+        questions.forEach(q => {
+            const resp = assessmentResponses[q.id];
+            if (resp !== undefined) {
                 let score = 0;
-                let questionMax = 0;
-                
-                if (question.type === 'scale') {
-                    score = parseInt(response);
-                    questionMax = 10;
-                    
-                    // Reverse scoring for positive questions
-                    if (question.id === 'family_support' || question.id === 'peer_relationships' || 
-                        question.id === 'self_esteem' || question.id === 'family_communication') {
-                        score = 11 - score; // Reverse scale
+                let qMax = 0;
+
+                if (q.type === 'scale') {
+                    score = parseInt(resp) || 1;
+                    qMax = 10;
+                    // Reverse scoring for positive-oriented items
+                    if (q.id === 'family_support' || q.id === 'peer_relationships' ||
+                        q.id === 'self_esteem' || q.id === 'family_communication') {
+                        score = 11 - score;
                     }
                 } else {
-                    // Multiple choice questions
-                    const optionIndex = question.options.indexOf(response);
-                    questionMax = question.options.length - 1;
-                    
-                    // Score based on severity (higher index = more concerning)
-                    score = optionIndex;
+                    const optIndex = q.options.indexOf(resp);
+                    qMax = q.options.length - 1;
+                    score = optIndex >= 0 ? optIndex : 0;
                 }
-                
-                categoryScore += score;
-                categoryMax += questionMax;
+
+                catScore += score;
+                catMax += qMax;
             }
         });
-        
-        // Normalize to 0-100 scale
-        categoryScores[category] = categoryMax > 0 ? (categoryScore / categoryMax) * 100 : 0;
-        totalScore += categoryScore;
-        maxScore += categoryMax;
+
+        categoryScores[catKey] = catMax > 0 ? Math.round((catScore / catMax) * 100) : 0;
+        totalScore += catScore;
+        maxScore += catMax;
     });
-    
-    // Calculate overall score (reverse it so higher = better)
-    const overallScore = maxScore > 0 ? 100 - ((totalScore / maxScore) * 100) : 100;
-    
-    // Determine mood category
-    let moodCategory = 'excellent';
+
+    const overallScore = maxScore > 0 ? Math.round(100 - ((totalScore / maxScore) * 100)) : 100;
+
+    let categoryKey = 'excellent';
     if (overallScore >= 85) {
-        moodCategory = 'excellent';
+        categoryKey = 'excellent';
     } else if (overallScore >= 70) {
-        moodCategory = 'good';
+        categoryKey = 'good';
     } else if (overallScore >= 50) {
-        moodCategory = 'moderate_stress';
+        categoryKey = 'moderate_stress';
     } else if (overallScore >= 30) {
-        moodCategory = 'high_stress';
+        categoryKey = 'high_stress';
     } else {
-        moodCategory = 'crisis';
+        categoryKey = 'crisis';
     }
-    
+
     moodResult = {
-        category: moodCategory,
-        score: Math.round(overallScore),
+        category: categoryKey,
+        score: overallScore,
         categoryScores: categoryScores,
-        ...moodCategories[moodCategory]
+        ...moodCategories[categoryKey]
     };
 }
 
-function identifyPrimaryConcerns() {
+function identifyFocusAreas() {
     primaryConcerns = [];
-    const threshold = 60; // Scores above this indicate concern
-    
-    Object.keys(moodResult.categoryScores).forEach(category => {
-        if (moodResult.categoryScores[category] > threshold) {
-            const concernName = category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+    const threshold = 50;
+
+    const categoryNames = {
+        academic_stress: 'Academic Pressure',
+        family_dynamics: 'Family Communication & Expectations',
+        social_personal: 'Social & Emotional Wellbeing',
+        physical_emotional: 'Sleep & Energy Balance',
+        cultural_societal: 'Cultural & Social Pressure'
+    };
+
+    Object.keys(moodResult.categoryScores).forEach(cat => {
+        const stressPercentage = moodResult.categoryScores[cat];
+        if (stressPercentage >= threshold) {
             primaryConcerns.push({
-                category: category,
-                name: concernName,
-                score: Math.round(moodResult.categoryScores[category])
+                category: cat,
+                name: categoryNames[cat] || cat,
+                score: stressPercentage
             });
         }
     });
-    
-    // Sort by severity
+
     primaryConcerns.sort((a, b) => b.score - a.score);
 }
 
-function displayResults() {
-    // Update mood display
-    const moodIcon = document.getElementById('mood-icon');
-    const moodCategory = document.getElementById('mood-category');
-    const moodDescription = document.getElementById('mood-description');
+function renderResultsScreen() {
+    // 1. Mood Icon and category header
+    const iconSymbol = document.getElementById('mood-icon-symbol');
+    const moodCat = document.getElementById('mood-category');
+    const moodDesc = document.getElementById('mood-description');
     const moodScore = document.getElementById('mood-score');
-    const resultsScreen = document.getElementById('results-screen');
-    
-    if (moodIcon) moodIcon.textContent = moodResult.icon;
-    if (moodCategory) moodCategory.textContent = moodResult.name;
-    if (moodDescription) moodDescription.textContent = moodResult.description.replace(/[^\x20-\x7E]/g, '');
+
+    if (iconSymbol) iconSymbol.textContent = moodResult.iconSymbol || 'sentiment_satisfied';
+    if (moodCat) moodCat.textContent = moodResult.name;
+    if (moodDesc) moodDesc.textContent = moodResult.description;
     if (moodScore) moodScore.textContent = `${moodResult.score}/100`;
 
-    // Change background color of results page based on mood category color
-    if (resultsScreen) {
-        resultsScreen.style.backgroundColor = moodResult.color;
-        // Optional: adjust text color for contrast if needed
-        if (moodResult.color === '#ef4444') { // red for crisis
-            resultsScreen.style.color = '#fff';
-        } else {
-            resultsScreen.style.color = '#000';
-        }
+    // 2. Pillar score progress breakdown
+    const pillarGrid = document.getElementById('pillar-scores-grid');
+    if (pillarGrid) {
+        const pillarDisplayNames = {
+            academic_stress: { name: 'Academic Stress', icon: 'school' },
+            family_dynamics: { name: 'Family Dynamics', icon: 'family_restroom' },
+            social_personal: { name: 'Social Wellbeing', icon: 'diversity_3' },
+            physical_emotional: { name: 'Physical & Energy', icon: 'spa' },
+            cultural_societal: { name: 'Societal Pressures', icon: 'public' }
+        };
+
+        pillarGrid.innerHTML = Object.keys(moodResult.categoryScores).map(catKey => {
+            const stressPct = moodResult.categoryScores[catKey];
+            const wellnessPct = Math.max(0, 100 - stressPct);
+            const info = pillarDisplayNames[catKey] || { name: catKey, icon: 'psychology' };
+
+            let barColor = 'var(--success)';
+            if (stressPct > 65) barColor = 'var(--danger)';
+            else if (stressPct > 40) barColor = 'var(--warning)';
+
+            return `
+                <div class="pillar-score-item">
+                    <div class="pillar-header">
+                        <span style="display:flex; align-items:center; gap:6px;">
+                            <span class="material-symbols-outlined" style="font-size:16px; color:var(--primary);">${info.icon}</span>
+                            ${info.name}
+                        </span>
+                        <span>${wellnessPct}% Balance</span>
+                    </div>
+                    <div class="pillar-bar-track">
+                        <div class="pillar-bar-fill" style="width: ${wellnessPct}%; background: ${barColor};"></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
-    
-    // Display primary concerns
+
+    // 3. Primary Concerns list
     const concernsList = document.getElementById('concerns-list');
     if (concernsList) {
         if (primaryConcerns.length > 0) {
-            concernsList.innerHTML = primaryConcerns.map(concern => 
-                `<span class="concern-tag">${concern.name} (${concern.score}%)</span>`
-            ).join('');
+            concernsList.innerHTML = primaryConcerns.map(c => `
+                <span class="concern-tag">
+                    <span class="material-symbols-outlined" style="font-size:16px; color:var(--warning);">priority_high</span>
+                    ${c.name} (${c.score}% Stress)
+                </span>
+            `).join('');
         } else {
-            concernsList.innerHTML = '<span style="color: var(--color-success);">No major concerns identified</span>';
+            concernsList.innerHTML = `
+                <span class="concern-tag" style="border-color: rgba(16, 185, 129, 0.4); background: var(--success-light);">
+                    <span class="material-symbols-outlined" style="font-size:16px; color:var(--success);">verified</span>
+                    No major elevated distress areas identified!
+                </span>
+            `;
         }
     }
-    
-    // Generate and display recommendations
-    generateRecommendations();
-    displayWellnessTips();
 
-    // Display YouTube videos based on mood category
+    // 4. Populate recommendations
+    ['immediate', 'short-term', 'long-term'].forEach(tab => {
+        const fieldKey = tab.replace('-', '_');
+        const container = document.getElementById(`${tab}-recommendations`);
+        if (container) {
+            const list = detailedRecommendations[moodResult.category]?.[fieldKey] || [];
+            container.innerHTML = list.map(item => `
+                <div class="rec-item-card">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span>${item}</span>
+                </div>
+            `).join('');
+        }
+    });
+
+    // 5. Curated Videos
     const videosContainer = document.getElementById('youtube-videos');
     if (videosContainer) {
         const videos = youtubeVideos[moodResult.category] || [];
-        if (videos.length > 0) {
-            videosContainer.innerHTML = videos.map(video => `
-                <div class="video-item">
-                    <a href="${video.url}" target="_blank" rel="noopener noreferrer">${video.title}</a>
+        videosContainer.innerHTML = videos.map(vid => `
+            <a href="${vid.url}" target="_blank" rel="noopener noreferrer" class="video-card">
+                <div class="video-card-top">
+                    <span class="material-symbols-outlined">smart_display</span>
+                    <span>YouTube Guide</span>
                 </div>
-            `).join('');
-        } else {
-            videosContainer.innerHTML = '<p>No videos available for this mental state.</p>';
-        }
+                <h4 class="video-title">${vid.title}</h4>
+            </a>
+        `).join('');
+    }
+
+    // 6. Wellness Tips
+    const tipsContainer = document.getElementById('wellness-tips-list');
+    if (tipsContainer) {
+        tipsContainer.innerHTML = wellnessTips.slice(0, 4).map(tip => `
+            <div class="wellness-tip-card">
+                <span class="material-symbols-outlined">lightbulb</span>
+                <span>${tip}</span>
+            </div>
+        `).join('');
     }
 }
 
-function generateRecommendations() {
-    const timeframes = ['immediate', 'short_term', 'long_term'];
-    
-    timeframes.forEach(timeframe => {
-        const container = document.getElementById(`${timeframe.replace('_', '-')}-recommendations`);
-        if (!container) return;
-        
-        let recommendationsList = detailedRecommendations[moodResult.category]?.[timeframe] || [];
+// Tab navigation for recommendations
+window.showRecommendationTab = function(tabName) {
+    document.querySelectorAll('.recommendation-tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
 
-        
-        // Remove duplicates and limit to 5 recommendations
-        recommendationsList = [...new Set(recommendationsList)].slice(0, 5);
-        
-        container.innerHTML = `
-            <ul class="recommendations-list">
-                ${recommendationsList.map(rec => `<li>${rec}</li>`).join('')}
-            </ul>
-        `;
-    });
-}
+    const targetTab = document.getElementById(`${tabName}-tab`);
+    if (targetTab) targetTab.classList.add('active');
 
-function displayWellnessTips() {
-    const container = document.getElementById('wellness-tips-list');
-    if (!container) return;
-    
-    // Select 5 random wellness tips
-    const selectedTips = wellnessTips.sort(() => 0.5 - Math.random()).slice(0, 5);
-    
-    container.innerHTML = selectedTips.map(tip => 
-        `<div class="wellness-tip">${tip}</div>`
-    ).join('');
-}
-
-// Check authentication on page load
-function checkAuthentication() {
-    const currentUser = localStorage.getItem('currentUser');
-    if (!currentUser) {
-        // No user logged in, redirect to registration
-        window.location.href = 'register.html';
-        return false;
-    }
-
-    // User is authenticated, show welcome screen
-    console.log('User authenticated:', JSON.parse(currentUser));
-    return true;
-}
-
-// Logout function
-window.logout = function() {
-    localStorage.removeItem('currentUser');
-    window.location.href = 'login.html';
+    const activeBtn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
 };
 
-// Dark Mode Toggle Functionality
+// Retake assessment
+window.retakeAssessment = function() {
+    showPage('welcome-screen');
+};
+
+// ==========================================================================
+// PDF Generation & Download
+// ==========================================================================
+
+window.downloadResults = function() {
+    if (!window.jspdf) {
+        alert("PDF generator library is still loading. Please try again in a moment.");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const assessmentId = 'MC-' + Date.now().toString(36).toUpperCase();
+    const completionTime = new Date().toLocaleString();
+
+    let y = 20;
+
+    // Header banner
+    doc.setFillColor(79, 70, 229);
+    doc.rect(0, 0, 210, 36, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(20);
+    doc.text('MindCare - Youth Mental Wellness Report', 20, 18);
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Confidential Mental Health & Resilience Analysis', 20, 28);
+
+    // Profile metadata block
+    y = 48;
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(15, y, 180, 24, 2, 2, 'F');
+
+    doc.setTextColor(15, 23, 42);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`User Name: ${userName}  |  Age: ${userAge}`, 22, y + 10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Assessment ID: ${assessmentId}  |  Date: ${completionTime}`, 22, y + 18);
+
+    // Status Summary
+    y += 36;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.setTextColor(79, 70, 229);
+    doc.text('1. Overall Mental Wellness Status', 15, y);
+
+    y += 8;
+    doc.setFillColor(16, 185, 129);
+    doc.roundedRect(15, y, 40, 12, 2, 2, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(11);
+    doc.text(`Score: ${moodResult.score}/100`, 20, y + 8);
+
+    doc.setTextColor(15, 23, 42);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.text(moodResult.name || 'Assessment Complete', 62, y + 8);
+
+    y += 20;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(71, 85, 105);
+    const descLines = doc.splitTextToSize(moodResult.description || '', 180);
+    doc.text(descLines, 15, y);
+    y += descLines.length * 6 + 10;
+
+    // Action Plan Summary
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.setTextColor(79, 70, 229);
+    doc.text('2. Immediate Action Plan (Next 24-48 Hours)', 15, y);
+    y += 8;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(15, 23, 42);
+    const recs = detailedRecommendations[moodResult.category]?.immediate || [];
+    recs.forEach(rec => {
+        const lines = doc.splitTextToSize(`• ${rec}`, 175);
+        doc.text(lines, 18, y);
+        y += lines.length * 5 + 3;
+    });
+
+    // Crisis contacts
+    y += 10;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(220, 38, 38);
+    doc.text('3. 24/7 National Helplines & Support', 15, y);
+    y += 7;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(15, 23, 42);
+    doc.text('• Tele-MANAS (Govt of India): 14416 (24/7 toll-free mental health support)', 18, y);
+    y += 6;
+    doc.text('• Vandrevala Foundation: 9999666555 (Free counseling across languages)', 18, y);
+    y += 6;
+    doc.text('• KIRAN Helpline: 1800-599-0019 (Govt of India Support)', 18, y);
+
+    // Footer note
+    doc.setFillColor(241, 245, 249);
+    doc.rect(0, 275, 210, 22, 'F');
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'italic');
+    doc.setTextColor(100, 116, 139);
+    doc.text('Disclaimer: This tool is an educational self-assessment and not a substitute for clinical psychological diagnosis.', 15, 285);
+
+    const filename = `MindCare_Wellness_Report_${userName.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+    doc.save(filename);
+};
+
+// ==========================================================================
+// Dark Mode Toggle
+// ==========================================================================
+
 function initializeDarkMode() {
-    const toggleButton = document.getElementById('dark-mode-toggle');
+    const toggleBtn = document.getElementById('dark-mode-toggle');
     const toggleIcon = document.getElementById('toggle-icon');
 
-    if (!toggleButton || !toggleIcon) return;
+    if (!toggleBtn || !toggleIcon) return;
 
-    // Check for saved preference
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-    // Apply saved theme or system preference
     if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
         document.body.classList.add('dark-mode');
-        toggleIcon.textContent = '☀️';
-        toggleButton.classList.add('dark');
+        toggleIcon.textContent = 'light_mode';
     } else {
-        toggleIcon.textContent = '🌙';
-        toggleButton.classList.remove('dark');
+        document.body.classList.remove('dark-mode');
+        toggleIcon.textContent = 'dark_mode';
     }
 
-    // Toggle function
-    function toggleDarkMode() {
+    toggleBtn.addEventListener('click', () => {
         const isDark = document.body.classList.toggle('dark-mode');
-        const newTheme = isDark ? 'dark' : 'light';
-
-        // Update icon and button appearance
-        if (isDark) {
-            toggleIcon.textContent = '☀️';
-            toggleButton.classList.add('dark');
-        } else {
-            toggleIcon.textContent = '🌙';
-            toggleButton.classList.remove('dark');
-        }
-
-        // Save preference
-        localStorage.setItem('theme', newTheme);
-    }
-
-    // Add event listener
-    toggleButton.addEventListener('click', toggleDarkMode);
+        toggleIcon.textContent = isDark ? 'light_mode' : 'dark_mode';
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM Content Loaded - Mental Wellness Assessment');
+// ==========================================================================
+// Floating AI Chatbot
+// ==========================================================================
 
-    // Initialize dark mode toggle
-    initializeDarkMode();
+function initializeChatbot() {
+    const botBtn = document.getElementById('chatbot-button');
+    const botWindow = document.getElementById('chatbot-window');
+    const botClose = document.getElementById('chatbot-close');
+    const botQuestions = document.getElementById('chatbot-questions');
+    const botAnswer = document.getElementById('chatbot-answer');
 
-    // Open Demo button functionality
-    const openDemoBtn = document.getElementById('open-demo-btn');
-    if (openDemoBtn) {
-        openDemoBtn.addEventListener('click', function() {
-            const demoUser = {
-                username: 'Demo User',
-                email: 'demo@example.com',
-                provider: 'demo'
-            };
-            localStorage.setItem('currentUser', JSON.stringify(demoUser));
-            showPage('welcome-screen');
+    if (!botBtn || !botWindow) return;
+
+    botBtn.addEventListener('click', () => {
+        const isOpen = botWindow.style.display === 'block';
+        botWindow.style.display = isOpen ? 'none' : 'block';
+    });
+
+    if (botClose) {
+        botClose.addEventListener('click', () => {
+            botWindow.style.display = 'none';
         });
     }
 
-    // Create tooltip element for recommendation hover
-    let recommendationTooltip = document.createElement('div');
-    recommendationTooltip.id = 'recommendation-tooltip';
-    recommendationTooltip.style.position = 'absolute';
-    recommendationTooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-    recommendationTooltip.style.color = '#fff';
-    recommendationTooltip.style.padding = '8px';
-    recommendationTooltip.style.borderRadius = '4px';
-    recommendationTooltip.style.fontSize = '12px';
-    recommendationTooltip.style.maxWidth = '300px';
-    recommendationTooltip.style.zIndex = '1000';
-    recommendationTooltip.style.display = 'none';
-    recommendationTooltip.style.pointerEvents = 'none';
-    document.body.appendChild(recommendationTooltip);
-
-    // Add hover event listeners to recommendation tab buttons
-    function showTooltip(event) {
-        const tabName = event.target.getAttribute('data-tab');
-        if (!tabName) return;
-
-        // Get recommendations for the hovered tab
-        const timeframe = tabName.replace('-', '_');
-        const recommendationsList = detailedRecommendations[moodResult.category]?.[timeframe] || [];
-        if (recommendationsList.length === 0) {
-            recommendationTooltip.style.display = 'none';
-            return;
-        }
-
-        // Build tooltip content as a list
-        const content = '<strong>' + event.target.textContent + '</strong><br><ul style="margin: 4px 0 0 16px; padding: 0;">' +
-            recommendationsList.map(rec => `<li>${rec}</li>`).join('') + '</ul>';
-
-        recommendationTooltip.innerHTML = content;
-
-        // Position tooltip near the hovered element
-        const rect = event.target.getBoundingClientRect();
-        recommendationTooltip.style.top = (rect.bottom + window.scrollY + 5) + 'px';
-        recommendationTooltip.style.left = (rect.left + window.scrollX) + 'px';
-        recommendationTooltip.style.display = 'block';
-    }
-
-    function hideTooltip() {
-        recommendationTooltip.style.display = 'none';
-    }
-
-    // Attach listeners after DOM is ready
-    setTimeout(() => {
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.setAttribute('data-tab', btn.id ? btn.id.replace('-tab-btn', '') : '');
-            btn.addEventListener('mouseenter', showTooltip);
-            btn.addEventListener('mouseleave', hideTooltip);
-        });
-    }, 500);
-
-    // Check if user is authenticated
-    if (!checkAuthentication()) {
-        // Show login screen if not authenticated
-        showPage('login-screen');
-        return; // Redirect handled in checkAuthentication
-    }
-
-    // Disable right-click and left-click on non-interactive elements during assessment
-    document.addEventListener('contextmenu', function(e) {
-        const assessmentScreen = document.getElementById('assessment-screen');
-        if (assessmentScreen && assessmentScreen.classList.contains('active')) {
-            e.preventDefault();
-        }
-    });
-
-    document.addEventListener('click', function(e) {
-        const assessmentScreen = document.getElementById('assessment-screen');
-        if (assessmentScreen && assessmentScreen.classList.contains('active')) {
-            // Allow clicks only on buttons, inputs, and options
-            if (!(e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.classList.contains('option') || e.target.closest('.assessment-navigation'))) {
-                e.preventDefault();
-            }
-        }
-    });
-
-    // Set up modal close listeners
-    document.addEventListener('click', function(event) {
-        const modal = document.getElementById('crisis-modal');
-        if (event.target === modal) {
-            closeCrisisModal();
-        }
-    });
-
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            const modal = document.getElementById('crisis-modal');
-            if (modal && !modal.classList.contains('hidden')) {
-                closeCrisisModal();
-            }
-        }
-    });
-
-    // Login form functionality
-    const loginForm = document.getElementById('login-form');
-    const loginError = document.getElementById('login-error');
-    const demoLoginBtn = document.getElementById('demo-login-btn');
-
-    if (loginForm) {
-        loginForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            loginError.textContent = '';
-
-            const email = loginForm.email.value.trim();
-            const password = loginForm.password.value;
-
-            let users = JSON.parse(localStorage.getItem('users') || '[]');
-            const user = users.find(u => u.email === email && u.password === password);
-
-            if (user) {
-                localStorage.setItem('currentUser', JSON.stringify(user));
-                showPage('welcome-screen');
-            } else {
-                loginError.textContent = 'Invalid email or password.';
+    if (botQuestions && botAnswer) {
+        botQuestions.addEventListener('click', (e) => {
+            const target = e.target.closest('.question-chip');
+            if (target) {
+                const answer = target.getAttribute('data-answer');
+                botAnswer.textContent = answer;
+                botAnswer.classList.add('has-content');
             }
         });
     }
-
-    if (demoLoginBtn) {
-        demoLoginBtn.addEventListener('click', function() {
-            const demoUser = {
-                email: 'demo@example.com',
-                name: 'Demo User',
-                age: 25,
-                gender: 'Other'
-            };
-            localStorage.setItem('currentUser', JSON.stringify(demoUser));
-            showPage('welcome-screen');
-        });
-    }
-
-    // Chatbot toggle
-    const chatbotButton = document.getElementById('chatbot-button');
-    const chatbotWindow = document.getElementById('chatbot-window');
-    const chatbotClose = document.getElementById('chatbot-close');
-    const chatbotQuestions = document.getElementById('chatbot-questions');
-    const chatbotAnswer = document.getElementById('chatbot-answer');
-
-    chatbotButton.addEventListener('click', () => {
-        if (chatbotWindow.style.display === 'none' || chatbotWindow.style.display === '') {
-            chatbotWindow.style.display = 'block';
-        } else {
-            chatbotWindow.style.display = 'none';
-            chatbotAnswer.textContent = '';
-        }
-    });
-
-    chatbotClose.addEventListener('click', () => {
-        chatbotWindow.style.display = 'none';
-        chatbotAnswer.textContent = '';
-    });
-
-    chatbotQuestions.addEventListener('click', (event) => {
-        if (event.target.classList.contains('question-item')) {
-            const answer = event.target.getAttribute('data-answer');
-            chatbotAnswer.textContent = answer;
-        }
-    });
-
-    console.log('Mental Wellness Assessment loaded successfully');
-});
+}
